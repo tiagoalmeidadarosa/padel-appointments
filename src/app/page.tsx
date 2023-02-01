@@ -60,11 +60,13 @@ export default function Home() {
       {currentStep === ModalSteps.step1 && (
         <>
           {getHours(date).map((h: number, index: number) => {
-            const disabled = h === 20;
+            const disabled = h === 20; //todo: here call to the API
             return (
-              <div key={`hour_${index}`}>
-                <Button disabled={disabled}>{`${h}:00`}</Button>
-              </div>
+              <Button
+                key={`hour_${index}`}
+                disabled={disabled}
+                style={{ width: "4rem" }}
+              >{`${h}:00`}</Button>
             );
           })}
         </>
