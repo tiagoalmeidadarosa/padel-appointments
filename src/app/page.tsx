@@ -1,37 +1,80 @@
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import Image from "next/image";
+import { Inter } from "@next/font/google";
+import styles from "./page.module.css";
+import { useState } from "react";
+import { Button, Modal, Typography } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { addDays, getHours } from "@/utils";
+
+const inter = Inter({ subsets: ["latin"] });
+
+enum ModalSteps {
+  step1,
+  step2,
+}
 
 export default function Home() {
+  const { Text } = Typography;
+  const [openModal, setOpenModal] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState<ModalSteps>(ModalSteps.step1);
+  const [date, setDate] = useState<Date>(new Date());
+
+  const showModal = (show: boolean) => {
+    setOpenModal(show);
+  };
+
+  const handleOk = () => {
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpenModal(false);
+      setConfirmLoading(false);
+    }, 2000);
+  };
+
+  const CustomTitle = (
+    <div className={styles.modalTitle}>
+      {currentStep === ModalSteps.step1 && (
+        <>
+          <Button
+            type="text"
+            icon={<LeftOutlined />}
+            onClick={() => setDate((prev) => addDays(prev, -1))}
+            disabled={new Date().getDate() === date.getDate()}
+          />
+          <Text>{date.toDateString()}</Text>
+          <Button
+            type="text"
+            icon={<RightOutlined />}
+            onClick={() => setDate((prev) => addDays(prev, 1))}
+          />
+        </>
+      )}
+    </div>
+  );
+
+  const ModalContent = (
+    <div className={styles.modalBody}>
+      {currentStep === ModalSteps.step1 && (
+        <>
+          {getHours(date).map((h: number, index: number) => {
+            const disabled = h === 20;
+            return (
+              <div key={`hour_${index}`}>
+                <Button disabled={disabled}>{`${h}:00`}</Button>
+              </div>
+            );
+          })}
+        </>
+      )}
+    </div>
+  );
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
+      <div className={styles.center} onClick={() => showModal(true)}>
         <Image
           className={styles.logo}
           src="/next.svg"
@@ -45,47 +88,16 @@ export default function Home() {
         </div>
       </div>
 
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      <Modal
+        title={CustomTitle}
+        open={openModal}
+        onOk={handleOk}
+        confirmLoading={confirmLoading}
+        onCancel={() => showModal(false)}
+        closable={false}
+      >
+        {ModalContent}
+      </Modal>
     </main>
-  )
+  );
 }

@@ -78,6 +78,8 @@
   align-items: center;
   position: relative;
   padding: 4rem 0;
+  cursor: pointer;
+  border: 1px solid blue;
 }
 
 .center::before {
@@ -149,6 +151,20 @@
     rgba(var(--tile-end-rgb), 1)
   );
   background-clip: content-box;
+}
+
+.modalTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1rem 0;
 }
 
 /* Enable hover only on non-touch devices */
