@@ -3,10 +3,13 @@
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "./page.module.css";
-import { useState } from "react";
-import { Button, Modal, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Modal, Spin, Typography } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { addDays, getHours } from "@/utils";
+import { addDays, getHours } from "@/utils/date";
+import { Appointment } from "@/services/appointment/interfaces";
+import { AppointmentService } from "@/services/appointment";
+import { zeroPad } from "@/utils/number";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,10 +20,30 @@ enum ModalSteps {
 
 export default function Home() {
   const { Text } = Typography;
+  const [courtId, setCourtId] = useState<number>();
   const [openModal, setOpenModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<ModalSteps>(ModalSteps.step1);
   const [date, setDate] = useState<Date>(new Date());
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+  useEffect(() => {
+    if (courtId && date) {
+      setIsLoading(true);
+      AppointmentService.getAppointments(courtId, date)
+        .then((response: Appointment[]) => {
+          setAppointments(response);
+        })
+        .catch((err) => {
+          console.log(err);
+          setAppointments([] as Appointment[]);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  }, [courtId, date]);
 
   const showModal = (show: boolean) => {
     setOpenModal(show);
@@ -57,18 +80,25 @@ export default function Home() {
 
   const ModalContent = (
     <div className={styles.modalBody}>
-      {currentStep === ModalSteps.step1 && (
+      {isLoading && <Spin />}
+      {!isLoading && (
         <>
-          {getHours(date).map((h: number, index: number) => {
-            const disabled = h === 20; //todo: here call to the API
-            return (
-              <Button
-                key={`hour_${index}`}
-                disabled={disabled}
-                style={{ width: "4rem" }}
-              >{`${h}:00`}</Button>
-            );
-          })}
+          {currentStep === ModalSteps.step1 && (
+            <>
+              {getHours(date).map((h: number, index: number) => {
+                return (
+                  <Button
+                    key={`hour_${index}`}
+                    disabled={
+                      !!appointments.find(
+                        (a: Appointment) => a.time === `${zeroPad(h)}:00:00`
+                      )
+                    }
+                  >{`${zeroPad(h)}:00`}</Button>
+                );
+              })}
+            </>
+          )}
         </>
       )}
     </div>
@@ -76,7 +106,13 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div className={styles.center} onClick={() => showModal(true)}>
+      <div
+        className={styles.center}
+        onClick={() => {
+          setCourtId(1);
+          showModal(true);
+        }}
+      >
         <Image
           className={styles.logo}
           src="/next.svg"
