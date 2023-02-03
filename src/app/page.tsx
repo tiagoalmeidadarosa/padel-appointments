@@ -4,8 +4,13 @@ import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
-import { Button, Modal, Spin, Typography } from "antd";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { Button, Input, Modal, Spin, Typography } from "antd";
+import {
+  LeftOutlined,
+  RightOutlined,
+  UserOutlined,
+  PhoneOutlined,
+} from "@ant-design/icons";
 import { addDays, getHours } from "@/utils/date";
 import { Appointment } from "@/services/appointment/interfaces";
 import { AppointmentService } from "@/services/appointment";
@@ -20,18 +25,22 @@ enum ModalSteps {
 
 export default function Home() {
   const { Text } = Typography;
-  const [courtId, setCourtId] = useState<number>();
+
   const [openModal, setOpenModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState<ModalSteps>(ModalSteps.step1);
-  const [date, setDate] = useState<Date>(new Date());
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
+  const [currentStep, setCurrentStep] = useState<ModalSteps>(ModalSteps.step1);
+  const [selectedCourtId, setSelectedCourtId] = useState<number>();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedHour, setSelectedHour] = useState<string>();
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment>();
+
   useEffect(() => {
-    if (courtId && date) {
+    if (selectedCourtId && selectedDate) {
       setIsLoading(true);
-      AppointmentService.getAppointments(courtId, date)
+      AppointmentService.getAppointments(selectedCourtId, selectedDate)
         .then((response: Appointment[]) => {
           setAppointments(response);
         })
@@ -43,39 +52,95 @@ export default function Home() {
           setIsLoading(false);
         });
     }
-  }, [courtId, date]);
+  }, [selectedCourtId, selectedDate]);
 
   const showModal = (show: boolean) => {
     setOpenModal(show);
   };
 
+  const resetModal = () => {
+    setSelectedCourtId(undefined);
+    setSelectedDate(new Date());
+    setSelectedHour(undefined);
+    setSelectedAppointment(undefined);
+    setCurrentStep(ModalSteps.step1);
+    setOpenModal(false);
+  };
+
   const handleOk = () => {
     setConfirmLoading(true);
+    //Todo: call api
     setTimeout(() => {
-      setOpenModal(false);
       setConfirmLoading(false);
+      setOpenModal(false);
     }, 2000);
   };
 
   const CustomTitle = (
-    <div className={styles.modalTitle}>
+    <>
       {currentStep === ModalSteps.step1 && (
-        <>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Button
             type="text"
             icon={<LeftOutlined />}
-            onClick={() => setDate((prev) => addDays(prev, -1))}
-            disabled={new Date().getDate() === date.getDate()}
+            onClick={() => setSelectedDate((prev) => addDays(prev, -1))}
+            disabled={new Date().getDate() === selectedDate.getDate()}
           />
-          <Text>{date.toDateString()}</Text>
+          <Text>{selectedDate.toDateString()}</Text>
           <Button
             type="text"
             icon={<RightOutlined />}
-            onClick={() => setDate((prev) => addDays(prev, 1))}
+            onClick={() => setSelectedDate((prev) => addDays(prev, 1))}
           />
-        </>
+        </div>
       )}
-    </div>
+      {currentStep === ModalSteps.step2 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Text>{`${selectedDate.toDateString()} ${selectedHour}`}</Text>
+        </div>
+      )}
+    </>
+  );
+
+  const CustomFooter = (
+    <>
+      {currentStep === ModalSteps.step1 && (
+        <Button key="back" onClick={resetModal}>
+          Fechar
+        </Button>
+      )}
+      {currentStep === ModalSteps.step2 && (
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Button danger type="text" disabled={!selectedAppointment}>
+            Delete
+          </Button>
+          <div>
+            <Button key="back" onClick={() => setCurrentStep(ModalSteps.step1)}>
+              Voltar
+            </Button>
+            <Button
+              key="submit"
+              type="primary"
+              loading={confirmLoading}
+              onClick={handleOk}
+            >
+              Ok
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
   );
 
   const ModalContent = (
@@ -85,19 +150,65 @@ export default function Home() {
         <>
           {currentStep === ModalSteps.step1 && (
             <>
-              {getHours(date).map((h: number, index: number) => {
+              {getHours(selectedDate).map((h: number, index: number) => {
+                var formattedHour = `${zeroPad(h)}:00:00`;
+                var appointment = appointments.find(
+                  (a: Appointment) => a.time === formattedHour
+                );
                 return (
                   <Button
                     key={`hour_${index}`}
-                    disabled={
-                      !!appointments.find(
-                        (a: Appointment) => a.time === `${zeroPad(h)}:00:00`
-                      )
-                    }
-                  >{`${zeroPad(h)}:00`}</Button>
+                    className={!!appointment ? styles.grayButton : ""}
+                    onClick={() => {
+                      setSelectedHour(formattedHour);
+                      setSelectedAppointment(appointment);
+                      setCurrentStep(ModalSteps.step2);
+                    }}
+                  >
+                    {formattedHour.substring(0, 5)}
+                  </Button>
                 );
               })}
             </>
+          )}
+          {currentStep === ModalSteps.step2 && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+                width: "50%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                }}
+              >
+                <Text>{"Nome:"}</Text>
+                <Input
+                  placeholder="Digite o nome"
+                  prefix={<UserOutlined />}
+                  value={selectedAppointment?.customerName}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                }}
+              >
+                <Text>{"Telefone:"}</Text>
+                <Input
+                  placeholder="Digite o telefone"
+                  prefix={<PhoneOutlined />}
+                  value={selectedAppointment?.customerPhoneNumber}
+                />
+              </div>
+            </div>
           )}
         </>
       )}
@@ -109,7 +220,7 @@ export default function Home() {
       <div
         className={styles.center}
         onClick={() => {
-          setCourtId(1);
+          setSelectedCourtId(1);
           showModal(true);
         }}
       >
@@ -129,10 +240,9 @@ export default function Home() {
       <Modal
         title={CustomTitle}
         open={openModal}
-        onOk={handleOk}
         confirmLoading={confirmLoading}
-        onCancel={() => showModal(false)}
         closable={false}
+        footer={CustomFooter}
       >
         {ModalContent}
       </Modal>

@@ -153,12 +153,6 @@
   background-clip: content-box;
 }
 
-.modalTitle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .modalBody {
   display: flex;
   flex-direction: column;
