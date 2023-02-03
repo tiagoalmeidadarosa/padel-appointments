@@ -167,6 +167,15 @@
   margin: 1rem 0;
 }
 
+.grayButton {
+  background-color: lightgray !important;
+}
+
+.grayButton:hover {
+  color: black !important;
+  border-color: darkgray !important;
+}
+
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
   .card:hover {
