@@ -20,7 +20,7 @@ export const getHours = (date: Date) => {
 
   let hours = interval(8, 23);
   if (today.toDateString() === date.toDateString()) {
-    hours = hours.filter((h: number) => h > currentHour);
+    hours = hours.filter((h: number) => h >= currentHour);
   }
 
   return hours;
