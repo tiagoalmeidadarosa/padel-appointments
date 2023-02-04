@@ -153,23 +153,6 @@
   background-clip: content-box;
 }
 
-.modalBody {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
-  margin: 1rem 0;
-}
-
-.grayButton {
-  background-color: lightgray !important;
-}
-
-.grayButton:hover {
-  color: black !important;
-  border-color: darkgray !important;
-}
-
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
   .card:hover {

@@ -1,0 +1,43 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.space {
+  display: flex;
+  justify-content: space-between;
+}
+
+.centralizedItems {
+  display: flex;
+  align-items: center;
+}
+
+.grayButton {
+  background-color: lightgray !important;
+}
+.grayButton:hover {
+  color: black !important;
+  border-color: darkgray !important;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 50%;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
