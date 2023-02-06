@@ -1,3 +1,5 @@
+import format from 'date-fns/format';
+
 export const addDays = (date: Date, days: number) => {
   var result = new Date(date);
   result.setDate(result.getDate() + days);
@@ -24,4 +26,9 @@ export const getHours = (date: Date) => {
   }
 
   return hours;
+};
+
+export const getUTCString = (date: Date | null) => {
+  if (!date) return null;
+  return format(date, 'yyyy-MM-dd');
 };
