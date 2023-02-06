@@ -174,6 +174,7 @@ export default function AppointmentModal(props: Props) {
               type="primary"
               loading={confirmLoading}
               onClick={handleOk}
+              disabled={!selectedCustomerName || !selectedCustomerPhoneNumber}
             >
               Ok
             </Button>
