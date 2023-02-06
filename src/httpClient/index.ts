@@ -2,6 +2,8 @@ import qs from "qs";
 import axios from "axios";
 import { appointmentsApiUrl } from "../config";
 
+alert(process.env, appointmentsApiUrl);
+
 export const httpClient = axios.create({
   baseURL: appointmentsApiUrl,
   headers: { "Content-Type": "application/json" },
