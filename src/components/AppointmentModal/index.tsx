@@ -6,11 +6,13 @@ import {
   RightOutlined,
   UserOutlined,
   PhoneOutlined,
+  ExclamationCircleFilled,
 } from "@ant-design/icons";
 import { AppointmentService } from "@/services/appointment";
 import { Appointment } from "@/services/appointment/interfaces";
-import { addDays, getHours } from "@/utils/date";
+import { addDays, getHours, getUTCString } from "@/utils/date";
 import { zeroPad } from "@/utils/number";
+import { AxiosResponse } from "axios";
 
 enum ModalSteps {
   step1,
@@ -34,13 +36,19 @@ export default function AppointmentModal(props: Props) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedHour, setSelectedHour] = useState<string>();
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment>();
+  const [selectedCustomerName, setSelectedCustomerName] = useState<string>();
+  const [selectedCustomerPhoneNumber, setSelectedCustomerPhoneNumber] =
+    useState<string>();
 
   useEffect(() => {
     if (courtId && selectedDate) {
       setIsLoading(true);
-      AppointmentService.getAppointments(courtId, selectedDate)
-        .then((response: Appointment[]) => {
-          setAppointments(response);
+      AppointmentService.getAppointments(
+        courtId,
+        getUTCString(selectedDate) as string
+      )
+        .then((response: AxiosResponse<Appointment[]>) => {
+          setAppointments(response.data);
         })
         .catch((err) => {
           console.log(err);
@@ -62,11 +70,56 @@ export default function AppointmentModal(props: Props) {
 
   const handleOk = () => {
     setConfirmLoading(true);
-    //Todo: call api
-    setTimeout(() => {
-      setConfirmLoading(false);
-      onCancel();
-    }, 2000);
+    if (selectedAppointment) {
+      AppointmentService.updateAppointment(courtId, {
+        ...selectedAppointment,
+        customerName: selectedCustomerName,
+        customerPhoneNumber: selectedCustomerPhoneNumber,
+      } as Appointment)
+        .then((response: AxiosResponse) => {
+          if (![200, 201, 204].includes(response.status)) throw Error;
+          Modal.info(OkModal);
+        })
+        .catch((err) => {
+          console.log(err);
+          Modal.info(ErrorModal);
+        })
+        .finally(() => {
+          setConfirmLoading(false);
+        });
+    } else {
+      AppointmentService.addAppointment(courtId, {
+        date: getUTCString(selectedDate) as string,
+        time: selectedHour,
+        customerName: selectedCustomerName,
+        customerPhoneNumber: selectedCustomerPhoneNumber,
+      } as Appointment)
+        .then((response: AxiosResponse) => {
+          if (![200, 201, 204].includes(response.status)) throw Error;
+          Modal.info(OkModal);
+        })
+        .catch((err) => {
+          console.log(err);
+          Modal.info(ErrorModal);
+        })
+        .finally(() => {
+          setConfirmLoading(false);
+        });
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedAppointment) {
+      AppointmentService.deleteAppointment(courtId, selectedAppointment.id)
+        .then((response: AxiosResponse) => {
+          if (![200, 201, 204].includes(response.status)) throw Error;
+          Modal.info(OkModal);
+        })
+        .catch((err) => {
+          console.log(err);
+          Modal.info(ErrorModal);
+        });
+    }
   };
 
   const CustomTitle = (
@@ -104,7 +157,12 @@ export default function AppointmentModal(props: Props) {
       )}
       {currentStep === ModalSteps.step2 && (
         <div className={styles.space}>
-          <Button danger type="text" disabled={!selectedAppointment}>
+          <Button
+            danger
+            type="text"
+            disabled={!selectedAppointment}
+            onClick={() => Modal.confirm(ConfirmModal)}
+          >
             Delete
           </Button>
           <div>
@@ -144,6 +202,10 @@ export default function AppointmentModal(props: Props) {
                     onClick={() => {
                       setSelectedHour(formattedHour);
                       setSelectedAppointment(appointment);
+                      setSelectedCustomerName(appointment?.customerName);
+                      setSelectedCustomerPhoneNumber(
+                        appointment?.customerPhoneNumber
+                      );
                       setCurrentStep(ModalSteps.step2);
                     }}
                   >
@@ -160,7 +222,10 @@ export default function AppointmentModal(props: Props) {
                 <Input
                   placeholder="Digite o nome"
                   prefix={<UserOutlined />}
-                  value={selectedAppointment?.customerName}
+                  value={selectedCustomerName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSelectedCustomerName(e.target.value)
+                  }
                 />
               </div>
               <div className={styles.input}>
@@ -168,7 +233,10 @@ export default function AppointmentModal(props: Props) {
                 <Input
                   placeholder="Digite o telefone"
                   prefix={<PhoneOutlined />}
-                  value={selectedAppointment?.customerPhoneNumber}
+                  value={selectedCustomerPhoneNumber}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSelectedCustomerPhoneNumber(e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -177,6 +245,32 @@ export default function AppointmentModal(props: Props) {
       )}
     </div>
   );
+
+  const OkModal = {
+    title: "Alterações salvas!",
+    content: <Text>Agendamento adicionado/editado com sucesso.</Text>,
+    onOk() {
+      onCancel();
+    },
+  };
+
+  const ErrorModal = {
+    title: "Erro!",
+    content: <Text>Não foi possível adicionar/editar agendamento.</Text>,
+  };
+
+  const ConfirmModal = {
+    title: "Você deseja deletar esse agendamento?",
+    icon: <ExclamationCircleFilled />,
+    content: (
+      <Text>
+        Após deletar não será possível reverter, apenas criá-lo novamente.
+      </Text>
+    ),
+    onOk() {
+      handleDelete();
+    },
+  };
 
   return (
     <Modal
