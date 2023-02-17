@@ -132,7 +132,7 @@ export default function AppointmentModal(props: Props) {
             onClick={() => setSelectedDate((prev) => addDays(prev, -1))}
             disabled={new Date().getDate() === selectedDate.getDate()}
           />
-          <Text>{selectedDate.toDateString()}</Text>
+          <Text>{`Quadra ${courtId} - ${selectedDate.toDateString()}`}</Text>
           <Button
             type="text"
             icon={<RightOutlined />}
