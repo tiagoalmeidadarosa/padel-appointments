@@ -163,7 +163,7 @@ export default function AppointmentModal(props: Props) {
             disabled={!selectedAppointment}
             onClick={() => Modal.confirm(ConfirmModal)}
           >
-            Delete
+            Cancelar horário
           </Button>
           <div>
             <Button key="back" onClick={() => setCurrentStep(ModalSteps.step1)}>
@@ -199,6 +199,7 @@ export default function AppointmentModal(props: Props) {
                 return (
                   <Button
                     key={`hour_${index}`}
+                    type="primary"
                     className={!!appointment ? styles.grayButton : ""}
                     onClick={() => {
                       setSelectedHour(formattedHour);
@@ -261,11 +262,12 @@ export default function AppointmentModal(props: Props) {
   };
 
   const ConfirmModal = {
-    title: "Você deseja deletar esse agendamento?",
+    title: "Você deseja realmente cancelar esse agendamento?",
     icon: <ExclamationCircleFilled />,
     content: (
       <Text>
-        Após deletar não será possível reverter, apenas criá-lo novamente.
+        Após deletar, não será possível a reversão do horário, apenas o marcando
+        novamente.
       </Text>
     ),
     onOk() {

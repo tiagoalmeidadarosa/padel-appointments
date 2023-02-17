@@ -1,11 +1,14 @@
 "use client";
-import { Inter } from "@next/font/google";
+import { KoHo } from "@next/font/google";
 import styles from "./page.module.css";
 import { useState } from "react";
 import AppointmentModal from "@/components/AppointmentModal";
 import BackgroundImage from "@/components/BackgroundImage";
 
-const inter = Inter({ subsets: ["latin"] });
+const koho = KoHo({
+  subsets: ["latin"],
+  weight: "500",
+});
 
 export default function Home() {
   const [openModal, setOpenModal] = useState(false);
@@ -17,19 +20,30 @@ export default function Home() {
   };
 
   return (
-    <main className={styles.main}>
-      <BackgroundImage onClick={handleSelectedCourt} />
+    <>
+      <style jsx global>{`
+        html,
+        body,
+        span,
+        input {
+          font-family: ${koho.style.fontFamily} !important;
+        }
+      `}</style>
 
-      {openModal && selectedCourtId && (
-        <AppointmentModal
-          show={openModal}
-          courtId={selectedCourtId}
-          onCancel={() => {
-            setSelectedCourtId(undefined);
-            setOpenModal(false);
-          }}
-        />
-      )}
-    </main>
+      <main className={styles.main}>
+        <BackgroundImage onClick={handleSelectedCourt} />
+
+        {openModal && selectedCourtId && (
+          <AppointmentModal
+            show={openModal}
+            courtId={selectedCourtId}
+            onCancel={() => {
+              setSelectedCourtId(undefined);
+              setOpenModal(false);
+            }}
+          />
+        )}
+      </main>
+    </>
   );
 }
