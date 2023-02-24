@@ -13,6 +13,8 @@ import { Appointment } from "@/services/appointment/interfaces";
 import { addDays, getHours, getUTCString } from "@/utils/date";
 import { zeroPad } from "@/utils/number";
 import { AxiosResponse } from "axios";
+import moment from "moment";
+import "moment/locale/pt-br";
 
 enum ModalSteps {
   step1,
@@ -27,6 +29,8 @@ type Props = {
 export default function AppointmentModal(props: Props) {
   const { onCancel, courtId, show } = props;
   const { Text } = Typography;
+
+  moment.locale("pt-br");
 
   const [isLoading, setIsLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -145,7 +149,9 @@ export default function AppointmentModal(props: Props) {
             onClick={() => setSelectedDate((prev) => addDays(prev, -1))}
             disabled={new Date().getDate() === selectedDate.getDate()}
           />
-          <Text>{`Quadra ${courtId} - ${selectedDate.toDateString()}`}</Text>
+          <Text>{`Quadra ${courtId} - ${
+            moment(selectedDate).format("LLLL").split(" às")[0]
+          }`}</Text>
           <Button
             type="text"
             icon={<RightOutlined />}
