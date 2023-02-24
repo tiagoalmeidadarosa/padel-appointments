@@ -122,6 +122,19 @@ export default function AppointmentModal(props: Props) {
     }
   };
 
+  const handlePhoneKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    let value = (e.target as HTMLInputElement).value;
+    setSelectedCustomerPhoneNumber(phoneMask(value));
+  };
+
+  const phoneMask = (value: string) => {
+    if (!value) return "";
+    value = value.replace(/\D/g, "");
+    value = value.replace(/(\d{2})(\d)/, "($1) $2");
+    value = value.replace(/(\d)(\d{4})$/, "$1-$2");
+    return value;
+  };
+
   const CustomTitle = (
     <>
       {currentStep === ModalSteps.step1 && (
@@ -233,12 +246,15 @@ export default function AppointmentModal(props: Props) {
               <div className={styles.input}>
                 <Text>{"Telefone:"}</Text>
                 <Input
+                  type="tel"
+                  maxLength={15}
                   placeholder="Digite o telefone"
                   prefix={<PhoneOutlined />}
                   value={selectedCustomerPhoneNumber}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setSelectedCustomerPhoneNumber(e.target.value)
                   }
+                  onKeyUp={handlePhoneKeyPress}
                 />
               </div>
             </div>
