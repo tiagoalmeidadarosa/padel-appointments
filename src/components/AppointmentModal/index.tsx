@@ -161,7 +161,12 @@ export default function AppointmentModal(props: Props) {
       )}
       {currentStep === ModalSteps.step2 && (
         <div className={styles.center}>
-          <Text>{`${selectedDate.toDateString()} ${selectedHour}`}</Text>
+          <Text>{`Quadra ${courtId} - ${
+            moment(selectedDate).format("LLLL").split(" às")[0]
+          } ${selectedHour?.substring(
+            0,
+            selectedHour?.lastIndexOf(":")
+          )}`}</Text>
         </div>
       )}
     </>
