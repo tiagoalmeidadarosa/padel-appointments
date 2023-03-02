@@ -1,6 +1,6 @@
 import styles from "./styles.module.css";
 import { ModalSteps } from "./shared";
-import { Button, Input, Spin, Typography } from "antd";
+import { Button, Input, Radio, Spin, Typography } from "antd";
 import { Appointment } from "@/services/appointment/interfaces";
 import { getHours } from "@/utils/date";
 import { UserOutlined, PhoneOutlined } from "@ant-design/icons";
@@ -105,6 +105,14 @@ const Content = ({
                   }
                   onKeyUp={handlePhoneKeyPress}
                 />
+              </div>
+              <div className={styles.input}>
+                <Text>{"Recorrência:"}</Text>
+                <Radio.Group value={1}>
+                  <Radio value={1}>Hoje</Radio>
+                  <Radio value={2}>1 mês</Radio>
+                  <Radio value={3}>6 meses</Radio>
+                </Radio.Group>
               </div>
             </div>
           )}
