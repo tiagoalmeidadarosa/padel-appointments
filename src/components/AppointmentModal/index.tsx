@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from "antd";
+import { Drawer, Modal } from "antd";
 import { AppointmentService } from "@/services/appointment";
 import { Appointment } from "@/services/appointment/interfaces";
 import { getUTCString } from "@/utils/date";
@@ -57,10 +57,52 @@ export default function AppointmentModal(props: Props) {
   };
 
   return (
-    <Modal
+    // <Modal
+    //   open={show}
+    //   closable={false}
+    //   confirmLoading={confirmLoading}
+    //   title={CustomTitle({
+    //     courtId,
+    //     currentStep,
+    //     selectedDate,
+    //     selectedHour,
+    //     setSelectedDate,
+    //   })}
+    //   footer={CustomFooter({
+    //     courtId,
+    //     currentStep,
+    //     confirmLoading,
+    //     selectedAppointment,
+    //     selectedCustomerName,
+    //     selectedCustomerPhoneNumber,
+    //     selectedDate,
+    //     selectedHour,
+    //     setCurrentStep,
+    //     setConfirmLoading,
+    //     resetModal,
+    //     onCancel,
+    //   })}
+    // >
+    //   {ModalContent({
+    //     appointments,
+    //     isLoading,
+    //     currentStep,
+    //     selectedCustomerName,
+    //     selectedCustomerPhoneNumber,
+    //     selectedDate,
+    //     setCurrentStep,
+    //     setSelectedHour,
+    //     setSelectedAppointment,
+    //     setSelectedCustomerName,
+    //     setSelectedCustomerPhoneNumber,
+    //   })}
+    // </Modal>
+
+    <Drawer
       open={show}
+      placement="right"
+      onClose={resetModal}
       closable={false}
-      confirmLoading={confirmLoading}
       title={CustomTitle({
         courtId,
         currentStep,
@@ -96,6 +138,6 @@ export default function AppointmentModal(props: Props) {
         setSelectedCustomerName,
         setSelectedCustomerPhoneNumber,
       })}
-    </Modal>
+    </Drawer>
   );
 }
