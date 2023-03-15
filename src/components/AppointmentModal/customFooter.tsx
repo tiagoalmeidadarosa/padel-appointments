@@ -39,7 +39,12 @@ const CustomFooter = ({
 
   const OkModal = {
     title: "Alterações salvas!",
-    content: <Text>Agendamento adicionado/editado com sucesso.</Text>,
+    content: (
+      <Text>
+        Agendamento {!!selectedAppointment ? "editado" : "adicionado"} com
+        sucesso.
+      </Text>
+    ),
     onOk() {
       onCancel();
     },
@@ -47,7 +52,12 @@ const CustomFooter = ({
 
   const ErrorModal = {
     title: "Erro!",
-    content: <Text>Não foi possível adicionar/editar agendamento.</Text>,
+    content: (
+      <Text>
+        Não foi possível {!!selectedAppointment ? "editar" : "adicionar"}{" "}
+        agendamento.
+      </Text>
+    ),
   };
 
   const ConfirmModal = {
