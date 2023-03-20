@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "antd";
 import { AppointmentService } from "@/services/appointment";
-import { Appointment, RecurrenceType } from "@/services/appointment/interfaces";
+import { Appointment } from "@/services/appointment/interfaces";
 import { getUTCString } from "@/utils/date";
 import { AxiosResponse } from "axios";
 import { ModalSteps } from "./shared";
@@ -24,10 +24,6 @@ export default function AppointmentModal(props: Props) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedHour, setSelectedHour] = useState<string>();
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment>();
-  const [selectedCustomerName, setSelectedCustomerName] = useState<string>();
-  const [selectedCustomerPhoneNumber, setSelectedCustomerPhoneNumber] =
-    useState<string>();
-  const [selectedRecurrenceType, setSelectedRecurrenceType] = useState<RecurrenceType>();
 
   useEffect(() => {
     if (courtId && selectedDate) {
@@ -74,9 +70,6 @@ export default function AppointmentModal(props: Props) {
         currentStep,
         confirmLoading,
         selectedAppointment,
-        selectedCustomerName,
-        selectedCustomerPhoneNumber,
-        selectedRecurrenceType,
         selectedDate,
         selectedHour,
         setCurrentStep,
@@ -90,16 +83,10 @@ export default function AppointmentModal(props: Props) {
         isLoading,
         currentStep,
         selectedAppointment,
-        selectedCustomerName,
-        selectedCustomerPhoneNumber,
         selectedDate,
-        selectedRecurrenceType,
         setCurrentStep,
         setSelectedHour,
         setSelectedAppointment,
-        setSelectedCustomerName,
-        setSelectedCustomerPhoneNumber,
-        setSelectedRecurrenceType,
       })}
     </Modal>
   );

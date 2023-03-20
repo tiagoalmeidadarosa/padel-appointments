@@ -20,23 +20,11 @@ type Props = {
   isLoading: boolean;
   currentStep: ModalSteps;
   selectedAppointment: Appointment | undefined;
-  selectedCustomerName: string | undefined;
-  selectedCustomerPhoneNumber: string | undefined;
   selectedDate: Date;
-  selectedRecurrenceType: RecurrenceType | undefined;
   setCurrentStep: React.Dispatch<React.SetStateAction<ModalSteps>>;
   setSelectedHour: React.Dispatch<React.SetStateAction<string | undefined>>;
   setSelectedAppointment: React.Dispatch<
     React.SetStateAction<Appointment | undefined>
-  >;
-  setSelectedCustomerName: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
-  setSelectedCustomerPhoneNumber: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
-  setSelectedRecurrenceType: React.Dispatch<
-    React.SetStateAction<RecurrenceType | undefined>
   >;
 };
 const Content = ({
@@ -44,22 +32,22 @@ const Content = ({
   isLoading,
   currentStep,
   selectedAppointment,
-  selectedCustomerName,
-  selectedCustomerPhoneNumber,
   selectedDate,
-  selectedRecurrenceType,
   setCurrentStep,
   setSelectedHour,
   setSelectedAppointment,
-  setSelectedCustomerName,
-  setSelectedCustomerPhoneNumber,
-  setSelectedRecurrenceType,
 }: Props) => {
   const { Text } = Typography;
 
   const handlePhoneKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     let value = (e.target as HTMLInputElement).value;
-    setSelectedCustomerPhoneNumber(phoneMask(value));
+    setSelectedAppointment(
+      (prevAppointment) =>
+        ({
+          ...prevAppointment,
+          customerPhoneNumber: phoneMask(value),
+        } as Appointment)
+    );
   };
 
   return (
@@ -82,11 +70,6 @@ const Content = ({
                     onClick={() => {
                       setSelectedHour(formattedHour);
                       setSelectedAppointment(appointment);
-                      setSelectedCustomerName(appointment?.customerName);
-                      setSelectedCustomerPhoneNumber(
-                        appointment?.customerPhoneNumber
-                      );
-                      setSelectedRecurrenceType(appointment?.recurrenceType);
                       setCurrentStep(ModalSteps.step2);
                     }}
                   >
@@ -103,10 +86,16 @@ const Content = ({
                 <Input
                   placeholder="Digite o nome"
                   prefix={<UserOutlined />}
-                  value={selectedCustomerName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setSelectedCustomerName(e.target.value)
-                  }
+                  value={selectedAppointment?.customerName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setSelectedAppointment(
+                      (prevAppointment) =>
+                        ({
+                          ...prevAppointment,
+                          customerName: e.target.value,
+                        } as Appointment)
+                    );
+                  }}
                 />
               </div>
               <div className={styles.input}>
@@ -116,10 +105,16 @@ const Content = ({
                   maxLength={15}
                   placeholder="Digite o telefone"
                   prefix={<PhoneOutlined />}
-                  value={selectedCustomerPhoneNumber}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setSelectedCustomerPhoneNumber(e.target.value)
-                  }
+                  value={selectedAppointment?.customerPhoneNumber}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setSelectedAppointment(
+                      (prevAppointment) =>
+                        ({
+                          ...prevAppointment,
+                          customerPhoneNumber: e.target.value,
+                        } as Appointment)
+                    );
+                  }}
                   onKeyUp={handlePhoneKeyPress}
                 />
               </div>
@@ -128,24 +123,34 @@ const Content = ({
                   <Text>{"Recorrência:"}</Text>
                   <Switch
                     size="small"
-                    checked={!!selectedRecurrenceType}
+                    checked={!!selectedAppointment?.recurrenceType}
                     onChange={(checked: boolean) => {
-                      if (checked) {
-                        setSelectedRecurrenceType(RecurrenceType.NextWeek);
-                      } else {
-                        setSelectedRecurrenceType(undefined);
-                      }
+                      setSelectedAppointment(
+                        (prevAppointment) =>
+                          ({
+                            ...prevAppointment,
+                            recurrenceType: checked
+                              ? RecurrenceType.NextWeek
+                              : undefined,
+                          } as Appointment)
+                      );
                     }}
                     disabled={!!selectedAppointment?.id}
                   />
                 </div>
-                {!!selectedRecurrenceType && (
+                {selectedAppointment?.recurrenceType && (
                   <Radio.Group
-                    value={selectedRecurrenceType}
+                    value={selectedAppointment?.recurrenceType}
                     disabled={!!selectedAppointment?.id}
-                    onChange={(e: RadioChangeEvent) =>
-                      setSelectedRecurrenceType(e.target.value)
-                    }
+                    onChange={(e: RadioChangeEvent) => {
+                      setSelectedAppointment(
+                        (prevAppointment) =>
+                          ({
+                            ...prevAppointment,
+                            recurrenceType: e.target.value,
+                          } as Appointment)
+                      );
+                    }}
                   >
                     <Radio value={RecurrenceType.NextWeek}>
                       Próxima semana
