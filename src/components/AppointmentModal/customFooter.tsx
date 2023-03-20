@@ -1,7 +1,7 @@
 import styles from "./styles.module.css";
 import { ModalSteps } from "./shared";
 import { Button, Modal, Typography } from "antd";
-import { Appointment } from "@/services/appointment/interfaces";
+import { Appointment, RecurrenceType } from "@/services/appointment/interfaces";
 import { AppointmentService } from "@/services/appointment";
 import { AxiosResponse } from "axios";
 import { getUTCString } from "@/utils/date";
@@ -14,6 +14,7 @@ type Props = {
   selectedAppointment: Appointment | undefined;
   selectedCustomerName: string | undefined;
   selectedCustomerPhoneNumber: string | undefined;
+  selectedRecurrenceType: RecurrenceType | undefined;
   selectedDate: Date;
   selectedHour: string | undefined;
   setCurrentStep: React.Dispatch<React.SetStateAction<ModalSteps>>;
@@ -28,6 +29,7 @@ const CustomFooter = ({
   selectedAppointment,
   selectedCustomerName,
   selectedCustomerPhoneNumber,
+  selectedRecurrenceType,
   selectedDate,
   selectedHour,
   setCurrentStep,
@@ -81,6 +83,7 @@ const CustomFooter = ({
         ...selectedAppointment,
         customerName: selectedCustomerName,
         customerPhoneNumber: selectedCustomerPhoneNumber,
+        recurrenceType: selectedRecurrenceType,
       } as Appointment)
         .then((response: AxiosResponse) => {
           if (![200, 201, 204].includes(response.status)) throw Error;
@@ -99,6 +102,7 @@ const CustomFooter = ({
         time: selectedHour,
         customerName: selectedCustomerName,
         customerPhoneNumber: selectedCustomerPhoneNumber,
+        recurrenceType: selectedRecurrenceType,
       } as Appointment)
         .then((response: AxiosResponse) => {
           if (![200, 201, 204].includes(response.status)) throw Error;

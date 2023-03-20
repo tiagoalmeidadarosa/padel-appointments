@@ -1,7 +1,15 @@
 import styles from "./styles.module.css";
 import { ModalSteps } from "./shared";
-import { Button, Input, Radio, Spin, Typography } from "antd";
-import { Appointment } from "@/services/appointment/interfaces";
+import {
+  Button,
+  Input,
+  Radio,
+  RadioChangeEvent,
+  Spin,
+  Switch,
+  Typography,
+} from "antd";
+import { Appointment, RecurrenceType } from "@/services/appointment/interfaces";
 import { getHours } from "@/utils/date";
 import { UserOutlined, PhoneOutlined } from "@ant-design/icons";
 import { zeroPad } from "@/utils/number";
@@ -11,9 +19,11 @@ type Props = {
   appointments: Appointment[];
   isLoading: boolean;
   currentStep: ModalSteps;
+  selectedAppointment: Appointment | undefined;
   selectedCustomerName: string | undefined;
   selectedCustomerPhoneNumber: string | undefined;
   selectedDate: Date;
+  selectedRecurrenceType: RecurrenceType | undefined;
   setCurrentStep: React.Dispatch<React.SetStateAction<ModalSteps>>;
   setSelectedHour: React.Dispatch<React.SetStateAction<string | undefined>>;
   setSelectedAppointment: React.Dispatch<
@@ -25,19 +35,25 @@ type Props = {
   setSelectedCustomerPhoneNumber: React.Dispatch<
     React.SetStateAction<string | undefined>
   >;
+  setSelectedRecurrenceType: React.Dispatch<
+    React.SetStateAction<RecurrenceType | undefined>
+  >;
 };
 const Content = ({
   appointments,
   isLoading,
   currentStep,
+  selectedAppointment,
   selectedCustomerName,
   selectedCustomerPhoneNumber,
   selectedDate,
+  selectedRecurrenceType,
   setCurrentStep,
   setSelectedHour,
   setSelectedAppointment,
   setSelectedCustomerName,
   setSelectedCustomerPhoneNumber,
+  setSelectedRecurrenceType,
 }: Props) => {
   const { Text } = Typography;
 
@@ -70,6 +86,7 @@ const Content = ({
                       setSelectedCustomerPhoneNumber(
                         appointment?.customerPhoneNumber
                       );
+                      setSelectedRecurrenceType(appointment?.recurrenceType);
                       setCurrentStep(ModalSteps.step2);
                     }}
                   >
@@ -107,12 +124,35 @@ const Content = ({
                 />
               </div>
               <div className={styles.input}>
-                <Text>{"Recorrência:"}</Text>
-                <Radio.Group value={1}>
-                  <Radio value={1}>Hoje</Radio>
-                  <Radio value={2}>1 mês</Radio>
-                  <Radio value={3}>6 meses</Radio>
-                </Radio.Group>
+                <div className={`${styles.space} ${styles.centralizedItems}`}>
+                  <Text>{"Recorrência:"}</Text>
+                  <Switch
+                    size="small"
+                    checked={!!selectedRecurrenceType}
+                    onChange={(checked: boolean) => {
+                      if (checked) {
+                        setSelectedRecurrenceType(RecurrenceType.NextWeek);
+                      } else {
+                        setSelectedRecurrenceType(undefined);
+                      }
+                    }}
+                    disabled={!!selectedAppointment?.id}
+                  />
+                </div>
+                {!!selectedRecurrenceType && (
+                  <Radio.Group
+                    value={selectedRecurrenceType}
+                    disabled={!!selectedAppointment?.id}
+                    onChange={(e: RadioChangeEvent) =>
+                      setSelectedRecurrenceType(e.target.value)
+                    }
+                  >
+                    <Radio value={RecurrenceType.NextWeek}>
+                      Próxima semana
+                    </Radio>
+                    <Radio value={RecurrenceType.NextMonth}>Próximo mês</Radio>
+                  </Radio.Group>
+                )}
               </div>
             </div>
           )}

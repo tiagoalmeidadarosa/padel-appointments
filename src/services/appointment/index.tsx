@@ -16,6 +16,7 @@ export class AppointmentService {
     return httpClient.put(`/courts/${courtId}/appointments/${appointment.id}`, {
       customerName: appointment.customerName,
       customerPhoneNumber: appointment.customerPhoneNumber,
+      recurrenceType: appointment.recurrenceType,
     });
   }
 
