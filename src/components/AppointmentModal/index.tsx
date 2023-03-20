@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "antd";
 import { AppointmentService } from "@/services/appointment";
-import { Appointment } from "@/services/appointment/interfaces";
+import { Appointment, RecurrenceType } from "@/services/appointment/interfaces";
 import { getUTCString } from "@/utils/date";
 import { AxiosResponse } from "axios";
 import { ModalSteps } from "./shared";
@@ -17,8 +17,8 @@ type Props = {
 export default function AppointmentModal(props: Props) {
   const { onCancel, courtId, show } = props;
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [currentStep, setCurrentStep] = useState<ModalSteps>(ModalSteps.step1);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -27,6 +27,7 @@ export default function AppointmentModal(props: Props) {
   const [selectedCustomerName, setSelectedCustomerName] = useState<string>();
   const [selectedCustomerPhoneNumber, setSelectedCustomerPhoneNumber] =
     useState<string>();
+  const [selectedRecurrenceType, setSelectedRecurrenceType] = useState<RecurrenceType>();
 
   useEffect(() => {
     if (courtId && selectedDate) {
@@ -75,6 +76,7 @@ export default function AppointmentModal(props: Props) {
         selectedAppointment,
         selectedCustomerName,
         selectedCustomerPhoneNumber,
+        selectedRecurrenceType,
         selectedDate,
         selectedHour,
         setCurrentStep,
@@ -87,14 +89,17 @@ export default function AppointmentModal(props: Props) {
         appointments,
         isLoading,
         currentStep,
+        selectedAppointment,
         selectedCustomerName,
         selectedCustomerPhoneNumber,
         selectedDate,
+        selectedRecurrenceType,
         setCurrentStep,
         setSelectedHour,
         setSelectedAppointment,
         setSelectedCustomerName,
         setSelectedCustomerPhoneNumber,
+        setSelectedRecurrenceType,
       })}
     </Modal>
   );
