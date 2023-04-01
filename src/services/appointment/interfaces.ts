@@ -4,4 +4,10 @@ export interface Appointment {
   time: string;
   customerName: string;
   customerPhoneNumber: string;
+  recurrenceType?: RecurrenceType,
+}
+
+export enum RecurrenceType {
+  NextWeek = 'NextWeek',
+  NextMonth = 'NextMonth',
 }

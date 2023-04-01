@@ -1,7 +1,15 @@
 import styles from "./styles.module.css";
 import { ModalSteps } from "./shared";
-import { Button, Input, Spin, Typography } from "antd";
-import { Appointment } from "@/services/appointment/interfaces";
+import {
+  Button,
+  Input,
+  Radio,
+  RadioChangeEvent,
+  Spin,
+  Switch,
+  Typography,
+} from "antd";
+import { Appointment, RecurrenceType } from "@/services/appointment/interfaces";
 import { getHours } from "@/utils/date";
 import { UserOutlined, PhoneOutlined } from "@ant-design/icons";
 import { zeroPad } from "@/utils/number";
@@ -11,39 +19,35 @@ type Props = {
   appointments: Appointment[];
   isLoading: boolean;
   currentStep: ModalSteps;
-  selectedCustomerName: string | undefined;
-  selectedCustomerPhoneNumber: string | undefined;
+  selectedAppointment: Appointment | undefined;
   selectedDate: Date;
   setCurrentStep: React.Dispatch<React.SetStateAction<ModalSteps>>;
   setSelectedHour: React.Dispatch<React.SetStateAction<string | undefined>>;
   setSelectedAppointment: React.Dispatch<
     React.SetStateAction<Appointment | undefined>
   >;
-  setSelectedCustomerName: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
-  setSelectedCustomerPhoneNumber: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
 };
 const Content = ({
   appointments,
   isLoading,
   currentStep,
-  selectedCustomerName,
-  selectedCustomerPhoneNumber,
+  selectedAppointment,
   selectedDate,
   setCurrentStep,
   setSelectedHour,
   setSelectedAppointment,
-  setSelectedCustomerName,
-  setSelectedCustomerPhoneNumber,
 }: Props) => {
   const { Text } = Typography;
 
   const handlePhoneKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     let value = (e.target as HTMLInputElement).value;
-    setSelectedCustomerPhoneNumber(phoneMask(value));
+    setSelectedAppointment(
+      (prevAppointment) =>
+        ({
+          ...prevAppointment,
+          customerPhoneNumber: phoneMask(value),
+        } as Appointment)
+    );
   };
 
   return (
@@ -66,10 +70,6 @@ const Content = ({
                     onClick={() => {
                       setSelectedHour(formattedHour);
                       setSelectedAppointment(appointment);
-                      setSelectedCustomerName(appointment?.customerName);
-                      setSelectedCustomerPhoneNumber(
-                        appointment?.customerPhoneNumber
-                      );
                       setCurrentStep(ModalSteps.step2);
                     }}
                   >
@@ -86,10 +86,16 @@ const Content = ({
                 <Input
                   placeholder="Digite o nome"
                   prefix={<UserOutlined />}
-                  value={selectedCustomerName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setSelectedCustomerName(e.target.value)
-                  }
+                  value={selectedAppointment?.customerName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setSelectedAppointment(
+                      (prevAppointment) =>
+                        ({
+                          ...prevAppointment,
+                          customerName: e.target.value,
+                        } as Appointment)
+                    );
+                  }}
                 />
               </div>
               <div className={styles.input}>
@@ -99,12 +105,59 @@ const Content = ({
                   maxLength={15}
                   placeholder="Digite o telefone"
                   prefix={<PhoneOutlined />}
-                  value={selectedCustomerPhoneNumber}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setSelectedCustomerPhoneNumber(e.target.value)
-                  }
+                  value={selectedAppointment?.customerPhoneNumber}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setSelectedAppointment(
+                      (prevAppointment) =>
+                        ({
+                          ...prevAppointment,
+                          customerPhoneNumber: e.target.value,
+                        } as Appointment)
+                    );
+                  }}
                   onKeyUp={handlePhoneKeyPress}
                 />
+              </div>
+              <div className={styles.input}>
+                <div className={`${styles.space} ${styles.centralizedItems}`}>
+                  <Text>{"Recorrência:"}</Text>
+                  <Switch
+                    size="small"
+                    checked={!!selectedAppointment?.recurrenceType}
+                    onChange={(checked: boolean) => {
+                      setSelectedAppointment(
+                        (prevAppointment) =>
+                          ({
+                            ...prevAppointment,
+                            recurrenceType: checked
+                              ? RecurrenceType.NextWeek
+                              : undefined,
+                          } as Appointment)
+                      );
+                    }}
+                    disabled={!!selectedAppointment?.id}
+                  />
+                </div>
+                {selectedAppointment?.recurrenceType && (
+                  <Radio.Group
+                    value={selectedAppointment?.recurrenceType}
+                    disabled={!!selectedAppointment?.id}
+                    onChange={(e: RadioChangeEvent) => {
+                      setSelectedAppointment(
+                        (prevAppointment) =>
+                          ({
+                            ...prevAppointment,
+                            recurrenceType: e.target.value,
+                          } as Appointment)
+                      );
+                    }}
+                  >
+                    <Radio value={RecurrenceType.NextWeek}>
+                      Próxima semana
+                    </Radio>
+                    <Radio value={RecurrenceType.NextMonth}>Próximo mês</Radio>
+                  </Radio.Group>
+                )}
               </div>
             </div>
           )}

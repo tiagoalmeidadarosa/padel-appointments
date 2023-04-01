@@ -12,8 +12,6 @@ type Props = {
   currentStep: ModalSteps;
   confirmLoading: boolean;
   selectedAppointment: Appointment | undefined;
-  selectedCustomerName: string | undefined;
-  selectedCustomerPhoneNumber: string | undefined;
   selectedDate: Date;
   selectedHour: string | undefined;
   setCurrentStep: React.Dispatch<React.SetStateAction<ModalSteps>>;
@@ -26,8 +24,6 @@ const CustomFooter = ({
   currentStep,
   confirmLoading,
   selectedAppointment,
-  selectedCustomerName,
-  selectedCustomerPhoneNumber,
   selectedDate,
   selectedHour,
   setCurrentStep,
@@ -41,7 +37,7 @@ const CustomFooter = ({
     title: "Alterações salvas!",
     content: (
       <Text>
-        Agendamento {!!selectedAppointment ? "editado" : "adicionado"} com
+        Agendamento {selectedAppointment?.id ? "editado" : "adicionado"} com
         sucesso.
       </Text>
     ),
@@ -54,7 +50,7 @@ const CustomFooter = ({
     title: "Erro!",
     content: (
       <Text>
-        Não foi possível {!!selectedAppointment ? "editar" : "adicionar"}{" "}
+        Não foi possível {selectedAppointment?.id ? "editar" : "adicionar"}{" "}
         agendamento.
       </Text>
     ),
@@ -76,12 +72,8 @@ const CustomFooter = ({
 
   const handleOk = () => {
     setConfirmLoading(true);
-    if (selectedAppointment) {
-      AppointmentService.updateAppointment(courtId, {
-        ...selectedAppointment,
-        customerName: selectedCustomerName,
-        customerPhoneNumber: selectedCustomerPhoneNumber,
-      } as Appointment)
+    if (selectedAppointment?.id) {
+      AppointmentService.updateAppointment(courtId, selectedAppointment)
         .then((response: AxiosResponse) => {
           if (![200, 201, 204].includes(response.status)) throw Error;
           Modal.info(OkModal);
@@ -97,8 +89,9 @@ const CustomFooter = ({
       AppointmentService.addAppointment(courtId, {
         date: getUTCString(selectedDate) as string,
         time: selectedHour,
-        customerName: selectedCustomerName,
-        customerPhoneNumber: selectedCustomerPhoneNumber,
+        customerName: selectedAppointment?.customerName,
+        customerPhoneNumber: selectedAppointment?.customerPhoneNumber,
+        recurrenceType: selectedAppointment?.recurrenceType,
       } as Appointment)
         .then((response: AxiosResponse) => {
           if (![200, 201, 204].includes(response.status)) throw Error;
@@ -115,7 +108,7 @@ const CustomFooter = ({
   };
 
   const handleDelete = () => {
-    if (selectedAppointment) {
+    if (selectedAppointment?.id) {
       AppointmentService.deleteAppointment(courtId, selectedAppointment.id)
         .then((response: AxiosResponse) => {
           if (![200, 201, 204].includes(response.status)) throw Error;
@@ -142,7 +135,7 @@ const CustomFooter = ({
           <Button
             danger
             type="text"
-            disabled={!selectedAppointment}
+            disabled={!selectedAppointment?.id}
             onClick={() => Modal.confirm(ConfirmModal)}
           >
             Cancelar horário
@@ -156,7 +149,10 @@ const CustomFooter = ({
               type="primary"
               loading={confirmLoading}
               onClick={handleOk}
-              disabled={!selectedCustomerName || !selectedCustomerPhoneNumber}
+              disabled={
+                !selectedAppointment?.customerName ||
+                !selectedAppointment?.customerPhoneNumber
+              }
             >
               Ok
             </Button>

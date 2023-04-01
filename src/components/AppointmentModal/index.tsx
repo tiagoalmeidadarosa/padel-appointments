@@ -17,16 +17,13 @@ type Props = {
 export default function AppointmentModal(props: Props) {
   const { onCancel, courtId, show } = props;
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [currentStep, setCurrentStep] = useState<ModalSteps>(ModalSteps.step1);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedHour, setSelectedHour] = useState<string>();
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment>();
-  const [selectedCustomerName, setSelectedCustomerName] = useState<string>();
-  const [selectedCustomerPhoneNumber, setSelectedCustomerPhoneNumber] =
-    useState<string>();
 
   useEffect(() => {
     if (courtId && selectedDate) {
@@ -74,8 +71,6 @@ export default function AppointmentModal(props: Props) {
         currentStep,
         confirmLoading,
         selectedAppointment,
-        selectedCustomerName,
-        selectedCustomerPhoneNumber,
         selectedDate,
         selectedHour,
         setCurrentStep,
@@ -88,14 +83,11 @@ export default function AppointmentModal(props: Props) {
         appointments,
         isLoading,
         currentStep,
-        selectedCustomerName,
-        selectedCustomerPhoneNumber,
+        selectedAppointment,
         selectedDate,
         setCurrentStep,
         setSelectedHour,
         setSelectedAppointment,
-        setSelectedCustomerName,
-        setSelectedCustomerPhoneNumber,
       })}
     </Drawer>
   );
