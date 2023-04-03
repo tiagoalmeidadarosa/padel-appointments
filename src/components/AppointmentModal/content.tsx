@@ -57,26 +57,28 @@ const Content = ({
         <>
           {currentStep === ModalSteps.step1 && (
             <>
-              {getHours(selectedDate).map((h: number, index: number) => {
-                var formattedHour = `${zeroPad(h)}:00:00`;
-                var appointment = appointments.find(
-                  (a: Appointment) => a.time === formattedHour
-                );
-                return (
-                  <Button
-                    key={`hour_${index}`}
-                    type="primary"
-                    className={!!appointment ? styles.grayButton : ""}
-                    onClick={() => {
-                      setSelectedHour(formattedHour);
-                      setSelectedAppointment(appointment);
-                      setCurrentStep(ModalSteps.step2);
-                    }}
-                  >
-                    {formattedHour.substring(0, 5)}
-                  </Button>
-                );
-              })}
+              {getHours(selectedDate, 8, 23).map(
+                (hour: number, index: number) => {
+                  var formattedHour = `${zeroPad(hour)}:00:00`;
+                  var appointment = appointments.find(
+                    (a: Appointment) => a.time === formattedHour
+                  );
+                  return (
+                    <Button
+                      key={`hour_${index}`}
+                      type="primary"
+                      className={!!appointment ? styles.grayButton : ""}
+                      onClick={() => {
+                        setSelectedHour(formattedHour);
+                        setSelectedAppointment(appointment);
+                        setCurrentStep(ModalSteps.step2);
+                      }}
+                    >
+                      {formattedHour.substring(0, 5)}
+                    </Button>
+                  );
+                }
+              )}
             </>
           )}
           {currentStep === ModalSteps.step2 && (

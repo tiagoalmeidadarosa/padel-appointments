@@ -1,4 +1,4 @@
-import format from 'date-fns/format';
+import format from "date-fns/format";
 
 export const addDays = (date: Date, days: number) => {
   var result = new Date(date);
@@ -16,11 +16,11 @@ const interval = (x: number, y: number) => {
   return result;
 };
 
-export const getHours = (date: Date) => {
+export const getHours = (date: Date, xInterval: number, yInterval: number) => {
   let today = new Date();
   let currentHour = date.getHours();
 
-  let hours = interval(8, 23);
+  let hours = interval(xInterval, yInterval);
   if (today.toDateString() === date.toDateString()) {
     hours = hours.filter((h: number) => h >= currentHour);
   }
@@ -30,5 +30,5 @@ export const getHours = (date: Date) => {
 
 export const getUTCString = (date: Date | null) => {
   if (!date) return null;
-  return format(date, 'yyyy-MM-dd');
+  return format(date, "yyyy-MM-dd");
 };
