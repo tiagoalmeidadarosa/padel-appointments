@@ -4,11 +4,14 @@ import { useScreenSize } from "@/hooks/useScreenSize";
 import React from "react";
 import ImageMapper from "react-img-mapper";
 import styles from "./styles.module.css";
+import { ImagePoint } from "./interfaces";
+import { ModalSteps } from "../AppointmentModal/shared";
+import FreeCourts from "./freeCourts";
 
 type Props = {
-  onClick: (courtId: number) => void;
+  onClick: (courtId: number, step?: ModalSteps, hour?: string) => void;
 };
-const BackgroundImage = (props: Props) => {
+const Background = (props: Props) => {
   const { onClick } = props;
   const { isBig, isMedium, isSmall } = useScreenSize();
   const { width, height } = useBackgroundImageDimensions(
@@ -21,7 +24,7 @@ const BackgroundImage = (props: Props) => {
   const imagePoints = [
     {
       id: "1",
-      title: "Court 1",
+      title: "Quadra 1",
       shape: "rect",
       name: "CourtOne",
       strokeColor: "black",
@@ -29,7 +32,7 @@ const BackgroundImage = (props: Props) => {
     },
     {
       id: "2",
-      title: "Court 2",
+      title: "Quadra 2",
       shape: "rect",
       name: "CourtTwo",
       strokeColor: "black",
@@ -37,31 +40,34 @@ const BackgroundImage = (props: Props) => {
     },
     {
       id: "3",
-      title: "Court 3",
+      title: "Quadra 3",
       shape: "rect",
       name: "CourtThree",
       strokeColor: "black",
       coords: coords[2],
     },
-  ];
+  ] as ImagePoint[];
 
   return (
-    <div className={styles.flex}>
-      <div>
-        <ImageMapper
-          src={"/padel-courts-background.svg"}
-          map={{
-            name: "my-map",
-            areas: imagePoints,
-          }}
-          lineWidth={1}
-          width={width}
-          height={height}
-          onClick={(area: any) => onClick(area.id)}
-        />
+    <>
+      <div className={styles.flex}>
+        <div>
+          <ImageMapper
+            src={"/padel-courts-background.svg"}
+            map={{
+              name: "my-map",
+              areas: imagePoints,
+            }}
+            lineWidth={1}
+            width={width}
+            height={height}
+            onClick={(area: any) => onClick(area.id)}
+          />
+        </div>
       </div>
-    </div>
+      <FreeCourts imagePoints={imagePoints} onSelect={onClick} />
+    </>
   );
 };
 
-export default BackgroundImage;
+export default Background;

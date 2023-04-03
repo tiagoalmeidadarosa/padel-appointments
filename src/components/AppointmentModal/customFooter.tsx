@@ -17,7 +17,6 @@ type Props = {
   setCurrentStep: React.Dispatch<React.SetStateAction<ModalSteps>>;
   setConfirmLoading: React.Dispatch<React.SetStateAction<boolean>>;
   resetModal: () => void;
-  onCancel: () => void;
 };
 const CustomFooter = ({
   courtId,
@@ -29,7 +28,6 @@ const CustomFooter = ({
   setCurrentStep,
   setConfirmLoading,
   resetModal,
-  onCancel,
 }: Props) => {
   const { Text } = Typography;
 
@@ -42,7 +40,7 @@ const CustomFooter = ({
       </Text>
     ),
     onOk() {
-      onCancel();
+      window.location.reload();
     },
   };
 

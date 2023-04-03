@@ -1,7 +1,13 @@
 import { httpClient } from "@/httpClient";
-import { Appointment } from "./interfaces";
+import { Appointment, CourtAppointment } from "./interfaces";
 
 export class AppointmentService {
+  static getCourtsAppointments(date: string) {
+    return httpClient.get<CourtAppointment[]>(
+      `/courts/appointments?date=${date}`
+    );
+  }
+
   static getAppointments(courtId: number, date: string) {
     return httpClient.get<Appointment[]>(
       `/courts/${courtId}/appointments?date=${date}`
