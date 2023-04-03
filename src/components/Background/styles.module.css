@@ -33,3 +33,8 @@
   max-width: 14rem;
   flex-flow: wrap;
 }
+
+.center {
+  display: flex;
+  justify-content: center;
+}
