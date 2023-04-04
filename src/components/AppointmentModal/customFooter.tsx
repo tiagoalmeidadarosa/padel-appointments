@@ -14,6 +14,7 @@ type Props = {
   selectedAppointment: Appointment | undefined;
   selectedDate: Date;
   selectedHour: string | undefined;
+  fromFreeCourts: boolean;
   setCurrentStep: React.Dispatch<React.SetStateAction<ModalSteps>>;
   setConfirmLoading: React.Dispatch<React.SetStateAction<boolean>>;
   resetModal: () => void;
@@ -25,6 +26,7 @@ const CustomFooter = ({
   selectedAppointment,
   selectedDate,
   selectedHour,
+  fromFreeCourts,
   setCurrentStep,
   setConfirmLoading,
   resetModal,
@@ -137,8 +139,13 @@ const CustomFooter = ({
             Cancelar horário
           </Button>
           <div>
-            <Button key="back" onClick={() => setCurrentStep(ModalSteps.step1)}>
-              Voltar
+            <Button
+              key="back"
+              onClick={() =>
+                fromFreeCourts ? resetModal() : setCurrentStep(ModalSteps.step1)
+              }
+            >
+              {fromFreeCourts ? "Fechar" : "Voltar"}
             </Button>
             <Button
               key="submit"
