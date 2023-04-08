@@ -80,7 +80,7 @@ const CustomFooter = ({
         })
         .catch((err) => {
           console.log(err);
-          Modal.info(ErrorModal);
+          Modal.error(ErrorModal);
         })
         .finally(() => {
           setConfirmLoading(false);
@@ -99,7 +99,7 @@ const CustomFooter = ({
         })
         .catch((err) => {
           console.log(err);
-          Modal.info(ErrorModal);
+          Modal.error(ErrorModal);
         })
         .finally(() => {
           setConfirmLoading(false);
@@ -116,7 +116,7 @@ const CustomFooter = ({
         })
         .catch((err) => {
           console.log(err);
-          Modal.info(ErrorModal);
+          Modal.error(ErrorModal);
         });
     }
   };
