@@ -91,6 +91,7 @@ const CustomFooter = ({
         time: selectedHour,
         customerName: selectedAppointment?.customerName,
         customerPhoneNumber: selectedAppointment?.customerPhoneNumber,
+        price: selectedAppointment?.price,
         recurrenceType: selectedAppointment?.recurrenceType,
       } as Appointment)
         .then((response: AxiosResponse) => {
@@ -154,7 +155,8 @@ const CustomFooter = ({
               onClick={handleOk}
               disabled={
                 !selectedAppointment?.customerName ||
-                !selectedAppointment?.customerPhoneNumber
+                !selectedAppointment?.customerPhoneNumber ||
+                !selectedAppointment?.price
               }
             >
               Ok
