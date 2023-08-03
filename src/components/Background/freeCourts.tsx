@@ -3,7 +3,7 @@ import {
   Appointment,
   CourtAppointment,
 } from "@/services/appointment/interfaces";
-import { Button, Spin, Typography } from "antd";
+import { Button, Card, Spin, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { ImagePoint } from "./interfaces";
 import { getHours, getUTCString } from "@/utils/date";
@@ -54,38 +54,48 @@ const FreeCourts = ({ imagePoints, onSelect }: Props) => {
           {imagePoints.map((imagePoint: ImagePoint) => {
             return (
               <div key={`court_${imagePoint.id}`} className={styles.court}>
-                <Text>{imagePoint.title}</Text>
-                <div className={styles.buttons}>
-                  <>
-                    {getHours(new Date(), 18, 22).map(
-                      (hour: number, index: number) => {
-                        var courtId = parseInt(imagePoint.id);
-                        var appointments = courtsAppointments?.find(
-                          (ca: CourtAppointment) => ca.id === courtId
-                        )?.appointments;
+                <Card
+                  size="small"
+                  title={imagePoint.title}
+                  className={styles.card}
+                  headStyle={{ borderColor: "#C3C2C2" }}
+                >
+                  <div className={styles.buttons}>
+                    <>
+                      {getHours(new Date(), 18, 22).map(
+                        (hour: number, index: number) => {
+                          var courtId = parseInt(imagePoint.id);
+                          var appointments = courtsAppointments?.find(
+                            (ca: CourtAppointment) => ca.id === courtId
+                          )?.appointments;
 
-                        var formattedHour = `${zeroPad(hour)}:00:00`;
-                        var appointment = appointments?.find(
-                          (a: Appointment) => a.time === formattedHour
-                        );
-                        if (appointment) {
-                          return;
+                          var formattedHour = `${zeroPad(hour)}:00:00`;
+                          var appointment = appointments?.find(
+                            (a: Appointment) => a.time === formattedHour
+                          );
+                          if (appointment) {
+                            return;
+                          }
+                          return (
+                            <Button
+                              key={`hour_${index}`}
+                              type="primary"
+                              onClick={() =>
+                                onSelect(
+                                  courtId,
+                                  ModalSteps.step2,
+                                  formattedHour
+                                )
+                              }
+                            >
+                              {formattedHour.substring(0, 5)}
+                            </Button>
+                          );
                         }
-                        return (
-                          <Button
-                            key={`hour_${index}`}
-                            type="primary"
-                            onClick={() =>
-                              onSelect(courtId, ModalSteps.step2, formattedHour)
-                            }
-                          >
-                            {formattedHour.substring(0, 5)}
-                          </Button>
-                        );
-                      }
-                    )}
-                  </>
-                </div>
+                      )}
+                    </>
+                  </div>
+                </Card>
               </div>
             );
           })}
