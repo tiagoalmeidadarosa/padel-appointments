@@ -35,7 +35,7 @@ const CustomTitle = ({
             disabled={new Date().getDate() === selectedDate.getDate()}
           />
           <Text>{`Quadra ${courtId} - ${
-            moment(selectedDate).format("LLLL").split(" às")[0]
+            moment(selectedDate).format("llll").split(" às")[0]
           }`}</Text>
           <Button
             type="text"
@@ -47,7 +47,7 @@ const CustomTitle = ({
       {currentStep === ModalSteps.step2 && (
         <div className={styles.center}>
           <Text>{`Quadra ${courtId} - ${
-            moment(selectedDate).format("LLLL").split(" às")[0]
+            moment(selectedDate).format("llll").split(" às")[0]
           } ${selectedHour?.substring(
             0,
             selectedHour?.lastIndexOf(":")
