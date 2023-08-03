@@ -141,7 +141,7 @@ const CustomFooter = ({
           >
             Cancelar horário
           </Button>
-          <div>
+          <div className={styles.gap}>
             <Button
               key="back"
               onClick={() =>
