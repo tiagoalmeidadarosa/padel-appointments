@@ -9,6 +9,7 @@ export interface Appointment {
   time: string;
   customerName: string;
   customerPhoneNumber: string;
+  price: number;
   recurrenceType?: RecurrenceType,
 }
 

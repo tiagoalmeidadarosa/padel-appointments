@@ -82,6 +82,7 @@ export default function AppointmentModal(props: Props) {
         setCurrentStep,
         setConfirmLoading,
         resetModal,
+        fromFreeCourts: !!step && !!hour
       })}
     >
       {ModalContent({

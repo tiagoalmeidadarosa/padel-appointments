@@ -14,6 +14,7 @@ type Props = {
   selectedAppointment: Appointment | undefined;
   selectedDate: Date;
   selectedHour: string | undefined;
+  fromFreeCourts: boolean;
   setCurrentStep: React.Dispatch<React.SetStateAction<ModalSteps>>;
   setConfirmLoading: React.Dispatch<React.SetStateAction<boolean>>;
   resetModal: () => void;
@@ -25,6 +26,7 @@ const CustomFooter = ({
   selectedAppointment,
   selectedDate,
   selectedHour,
+  fromFreeCourts,
   setCurrentStep,
   setConfirmLoading,
   resetModal,
@@ -78,7 +80,7 @@ const CustomFooter = ({
         })
         .catch((err) => {
           console.log(err);
-          Modal.info(ErrorModal);
+          Modal.error(ErrorModal);
         })
         .finally(() => {
           setConfirmLoading(false);
@@ -89,6 +91,7 @@ const CustomFooter = ({
         time: selectedHour,
         customerName: selectedAppointment?.customerName,
         customerPhoneNumber: selectedAppointment?.customerPhoneNumber,
+        price: selectedAppointment?.price,
         recurrenceType: selectedAppointment?.recurrenceType,
       } as Appointment)
         .then((response: AxiosResponse) => {
@@ -97,7 +100,7 @@ const CustomFooter = ({
         })
         .catch((err) => {
           console.log(err);
-          Modal.info(ErrorModal);
+          Modal.error(ErrorModal);
         })
         .finally(() => {
           setConfirmLoading(false);
@@ -114,7 +117,7 @@ const CustomFooter = ({
         })
         .catch((err) => {
           console.log(err);
-          Modal.info(ErrorModal);
+          Modal.error(ErrorModal);
         });
     }
   };
@@ -138,9 +141,14 @@ const CustomFooter = ({
           >
             Cancelar horário
           </Button>
-          <div className={styles.gap}>
-            <Button key="back" onClick={() => setCurrentStep(ModalSteps.step1)}>
-              Voltar
+          <div>
+            <Button
+              key="back"
+              onClick={() =>
+                fromFreeCourts ? resetModal() : setCurrentStep(ModalSteps.step1)
+              }
+            >
+              {fromFreeCourts ? "Fechar" : "Voltar"}
             </Button>
             <Button
               key="submit"
@@ -149,7 +157,8 @@ const CustomFooter = ({
               onClick={handleOk}
               disabled={
                 !selectedAppointment?.customerName ||
-                !selectedAppointment?.customerPhoneNumber
+                !selectedAppointment?.customerPhoneNumber ||
+                !selectedAppointment?.price
               }
             >
               Ok

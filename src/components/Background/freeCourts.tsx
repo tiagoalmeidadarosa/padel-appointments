@@ -42,7 +42,7 @@ const FreeCourts = ({ imagePoints, onSelect }: Props) => {
   return (
     <div className={styles.absolute}>
       <div className={styles.title}>
-        <Text>{"Horários disponíveis para marcação hoje:"}</Text>
+        <Text strong>{"Horários disponíveis hoje:"}</Text>
       </div>
       {isLoading && (
         <div className={styles.center}>
@@ -53,7 +53,7 @@ const FreeCourts = ({ imagePoints, onSelect }: Props) => {
         <div className={styles.body}>
           {imagePoints.map((imagePoint: ImagePoint) => {
             return (
-              <div key={`court_${imagePoint.id}`}>
+              <div key={`court_${imagePoint.id}`} className={styles.court}>
                 <Text>{imagePoint.title}</Text>
                 <div className={styles.buttons}>
                   <>

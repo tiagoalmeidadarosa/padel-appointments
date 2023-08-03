@@ -3,6 +3,7 @@ import { ModalSteps } from "./shared";
 import {
   Button,
   Input,
+  InputNumber,
   Radio,
   RadioChangeEvent,
   Spin,
@@ -84,7 +85,7 @@ const Content = ({
           {currentStep === ModalSteps.step2 && (
             <div className={styles.inputs}>
               <div className={styles.input}>
-                <Text>{"Nome:"}</Text>
+                <Text>{"Nome: *"}</Text>
                 <Input
                   placeholder="Digite o nome"
                   prefix={<UserOutlined />}
@@ -101,7 +102,7 @@ const Content = ({
                 />
               </div>
               <div className={styles.input}>
-                <Text>{"Telefone:"}</Text>
+                <Text>{"Telefone: *"}</Text>
                 <Input
                   type="tel"
                   maxLength={15}
@@ -118,6 +119,28 @@ const Content = ({
                     );
                   }}
                   onKeyUp={handlePhoneKeyPress}
+                />
+              </div>
+              <div className={styles.input}>
+                <Text>{"Preço: *"}</Text>
+                <InputNumber
+                  min={0}
+                  value={selectedAppointment?.price}
+                  formatter={(value: number | undefined) =>
+                    `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value: string | undefined) =>
+                    value ? parseFloat(value?.replace(/\R\$\s?|(,*)/g, "")) : 0
+                  }
+                  onChange={(value: number | null) => {
+                    setSelectedAppointment(
+                      (prevAppointment) =>
+                        ({
+                          ...prevAppointment,
+                          price: value,
+                        } as Appointment)
+                    );
+                  }}
                 />
               </div>
               <div className={styles.input}>
