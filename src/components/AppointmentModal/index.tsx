@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from "antd";
+import { Drawer } from "antd";
 import { AppointmentService } from "@/services/appointment";
 import { Appointment } from "@/services/appointment/interfaces";
 import { getUTCString } from "@/utils/date";
@@ -60,10 +60,11 @@ export default function AppointmentModal(props: Props) {
   };
 
   return (
-    <Modal
+    <Drawer
       open={show}
+      placement="right"
+      onClose={resetModal}
       closable={false}
-      confirmLoading={confirmLoading}
       title={CustomTitle({
         courtId,
         currentStep,
@@ -94,6 +95,6 @@ export default function AppointmentModal(props: Props) {
         setSelectedHour,
         setSelectedAppointment,
       })}
-    </Modal>
+    </Drawer>
   );
 }
