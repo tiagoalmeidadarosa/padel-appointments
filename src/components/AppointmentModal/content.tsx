@@ -85,10 +85,9 @@ const Content = ({
           {currentStep === ModalSteps.step2 && (
             <div className={styles.inputs}>
               <div className={styles.input}>
-                <Text>{"Nome: *"}</Text>
+                <Text strong>{"Nome (obrigatório):"}</Text>
                 <Input
                   placeholder="Digite o nome"
-                  prefix={<UserOutlined />}
                   value={selectedAppointment?.customerName}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setSelectedAppointment(
@@ -102,12 +101,11 @@ const Content = ({
                 />
               </div>
               <div className={styles.input}>
-                <Text>{"Telefone: *"}</Text>
+                <Text strong>{"Telefone (obrigatório):"}</Text>
                 <Input
                   type="tel"
                   maxLength={15}
                   placeholder="Digite o telefone"
-                  prefix={<PhoneOutlined />}
                   value={selectedAppointment?.customerPhoneNumber}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setSelectedAppointment(
@@ -122,7 +120,7 @@ const Content = ({
                 />
               </div>
               <div className={styles.input}>
-                <Text>{"Preço: *"}</Text>
+                <Text strong>{"Preço (obrigatório):"}</Text>
                 <InputNumber
                   min={0}
                   value={selectedAppointment?.price}
@@ -145,7 +143,7 @@ const Content = ({
               </div>
               <div className={styles.input}>
                 <div className={`${styles.space} ${styles.centralizedItems}`}>
-                  <Text>{"Recorrência:"}</Text>
+                  <Text strong>{"Recorrência:"}</Text>
                   <Switch
                     size="small"
                     checked={!!selectedAppointment?.recurrenceType}
