@@ -1,14 +1,15 @@
 "use client";
-import { KoHo } from "@next/font/google";
+import { Rubik } from "@next/font/google";
 import styles from "./page.module.css";
 import { useState } from "react";
 import AppointmentModal from "@/components/AppointmentModal";
 import Background from "@/components/Background";
 import { ModalSteps } from "@/components/AppointmentModal/shared";
+import { ConfigProvider } from "antd";
 
-const koho = KoHo({
+const rubik = Rubik({
   subsets: ["latin"],
-  weight: "500",
+  weight: ["400"],
 });
 
 export default function Home() {
@@ -29,16 +30,13 @@ export default function Home() {
   };
 
   return (
-    <>
-      <style jsx global>{`
-        html,
-        body,
-        span,
-        input {
-          font-family: ${koho.style.fontFamily} !important;
-        }
-      `}</style>
-
+    <ConfigProvider
+      theme={{
+        token: {
+          fontFamily: rubik.style.fontFamily,
+        },
+      }}
+    >
       <main className={styles.main}>
         <Background onClick={handleSelectedCourt} />
 
@@ -55,6 +53,6 @@ export default function Home() {
           />
         )}
       </main>
-    </>
+    </ConfigProvider>
   );
 }
