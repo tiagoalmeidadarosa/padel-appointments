@@ -125,9 +125,11 @@ const CustomFooter = ({
   return (
     <>
       {currentStep === ModalSteps.step1 && (
-        <Button key="back" onClick={resetModal}>
-          Fechar
-        </Button>
+        <div className={styles.end}>
+          <Button key="back" onClick={resetModal}>
+            Fechar
+          </Button>
+        </div>
       )}
       {currentStep === ModalSteps.step2 && (
         <div className={styles.space}>
@@ -139,7 +141,7 @@ const CustomFooter = ({
           >
             Cancelar horário
           </Button>
-          <div>
+          <div className={styles.gap}>
             <Button
               key="back"
               onClick={() =>

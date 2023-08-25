@@ -9,32 +9,45 @@
 
 .absolute {
   position: absolute;
-  top: 10%;
-  right: 1rem;
-  border: 2px solid black;
-  border-radius: 0.5rem;
+  top: 0%;
+  right: 0%;
+  bottom: 0%;
   padding: 1rem;
 }
 
 .title {
   text-align: center;
-  margin-bottom: 1rem;
+  padding: 1rem;
 }
 
 .body {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  justify-content: center;
 }
 
 .buttons {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 0.5rem;
-  max-width: 14rem;
-  flex-flow: wrap;
 }
 
 .center {
   display: flex;
   justify-content: center;
+}
+
+.court {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  /* border: 1px solid black;
+  border-radius: 0.5rem; */
+  padding: 1rem;
+}
+
+.card {
+  background-color: #d9d9d9;
+  border-color: #C3C2C2;
 }
