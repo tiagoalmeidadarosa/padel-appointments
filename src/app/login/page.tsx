@@ -24,7 +24,7 @@ export default function Login() {
         >
           <Form.Item>
             <Image
-              src="/favicon.ico"
+              src="/logo.svg"
               width={50}
               height={50}
               alt="Picture of the author"
@@ -32,7 +32,7 @@ export default function Login() {
           </Form.Item>
           <Form.Item
             name="username"
-            rules={[{ required: true, message: "Please input your Username!" }]}
+            rules={[{ required: true, message: "Por favor insira seu nome de usuário" }]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
@@ -41,7 +41,7 @@ export default function Login() {
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your Password!" }]}
+            rules={[{ required: true, message: "Por favor insira sua senha" }]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
