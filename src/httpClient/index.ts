@@ -1,12 +1,11 @@
 import qs from "qs";
 import axios from "axios";
 import { appointmentsApiUrl } from "../config";
-import { getSession } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 
 export const httpClient = axios.create({
   baseURL: appointmentsApiUrl,
   headers: { "Content-Type": "application/json" },
-  //withCredentials: true,
   paramsSerializer: {
     encode: (params) => qs.stringify(params, { indices: false }),
   },
@@ -26,7 +25,10 @@ httpClient.interceptors.response.use(
     return response;
   },
   async function (error) {
-    console.error(error?.response);
+    if (error?.response?.status === 401) {
+      signOut();
+      window.location.href = "/auth/login";
+    }
     return Promise.reject(error);
   }
 );
