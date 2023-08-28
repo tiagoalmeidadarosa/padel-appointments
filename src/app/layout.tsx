@@ -1,10 +1,16 @@
-import './globals.css'
+"use client";
+import "./globals.css";
+import { SessionProvider } from "next-auth/react";
+import { ReactNode } from "react";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+interface IProps {
+  children: ReactNode;
+  session: any;
+}
+
+export default function RootLayout(props: IProps) {
+  const { children, session } = props;
+
   return (
     <html lang="en">
       {/*
@@ -12,7 +18,9 @@ export default function RootLayout({
         head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
       */}
       <head />
-      <body>{children}</body>
+      <body>
+        <SessionProvider session={session}>{children}</SessionProvider>
+      </body>
     </html>
-  )
+  );
 }

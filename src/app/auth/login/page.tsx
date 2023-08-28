@@ -4,13 +4,20 @@ import Image from "next/image";
 import { Button, Checkbox, Form, Input } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
   const router = useRouter();
 
-  const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
-    router.push("/");
+  const onFinish = async (values: any) => {
+    const { username, password } = values;
+
+    await signIn("credentials", {
+      username: username,
+      password: password,
+      redirect: true,
+      callbackUrl: "/",
+    });
   };
 
   return (
@@ -32,7 +39,12 @@ export default function Login() {
           </Form.Item>
           <Form.Item
             name="username"
-            rules={[{ required: true, message: "Por favor insira seu nome de usuário" }]}
+            rules={[
+              {
+                required: true,
+                message: "Por favor insira seu nome de usuário",
+              },
+            ]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
