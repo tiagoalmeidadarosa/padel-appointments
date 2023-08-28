@@ -1,16 +1,12 @@
 "use client";
 import "./globals.css";
-import { SessionProvider } from "next-auth/react";
-import { ReactNode } from "react";
+import { NextAuthProvider } from "./providers";
 
-interface IProps {
-  children: ReactNode;
-  session: any;
-}
-
-export default function RootLayout(props: IProps) {
-  const { children, session } = props;
-
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       {/*
@@ -19,7 +15,7 @@ export default function RootLayout(props: IProps) {
       */}
       <head />
       <body>
-        <SessionProvider session={session}>{children}</SessionProvider>
+        <NextAuthProvider>{children}</NextAuthProvider>
       </body>
     </html>
   );
