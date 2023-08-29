@@ -1,0 +1,35 @@
+.initial {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.center {
+  display: flex;
+  width: 300px;
+  height: 250px;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: white;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginForm {
+  max-width: 300px;
+  text-align: center;
+}
+
+.loginFormForgot {
+  float: right;
+}
+
+.ant-col-rtl .loginFormForgot {
+  float: left;
+}
+
+.loginFormButton {
+  width: 100%;
+}

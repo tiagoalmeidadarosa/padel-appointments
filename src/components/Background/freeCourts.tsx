@@ -11,6 +11,8 @@ import { zeroPad } from "@/utils/number";
 import { ModalSteps } from "../AppointmentModal/shared";
 import { AppointmentService } from "@/services/appointment";
 import { AxiosResponse } from "axios";
+import { signOut } from "next-auth/react";
+import { LogoutOutlined } from "@ant-design/icons";
 
 type Props = {
   imagePoints: ImagePoint[];
@@ -101,6 +103,11 @@ const FreeCourts = ({ imagePoints, onSelect }: Props) => {
           })}
         </div>
       )}
+      <div className={styles.right}>
+        <Button icon={<LogoutOutlined />} type="text" onClick={() => signOut()}>
+          Logout
+        </Button>
+      </div>
     </div>
   );
 };
