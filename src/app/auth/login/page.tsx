@@ -1,15 +1,16 @@
 "use client";
 import styles from "./styles.module.css";
 import Image from "next/image";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useState } from "react";
 
 export default function Login() {
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onFinish = async (values: any) => {
+    setIsLoading(true);
     const { username, password } = values;
 
     await signIn("credentials", {
@@ -18,6 +19,8 @@ export default function Login() {
       redirect: true,
       callbackUrl: "/",
     });
+
+    setIsLoading(false);
   };
 
   return (
@@ -61,25 +64,16 @@ export default function Login() {
               placeholder="Password"
             />
           </Form.Item>
-          {/* <Form.Item>
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Remember me</Checkbox>
-            </Form.Item>
-
-            <a className={styles.loginFormForgot} href="">
-              Forgot password
-            </a>
-          </Form.Item> */}
 
           <Form.Item>
             <Button
               type="primary"
               htmlType="submit"
               className={styles.loginFormButton}
+              loading={isLoading}
             >
               Log in
             </Button>
-            {/* Or <a href="">register now!</a> */}
           </Form.Item>
         </Form>
       </div>
