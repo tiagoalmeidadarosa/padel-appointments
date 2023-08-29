@@ -10,10 +10,5 @@ export interface Appointment {
   customerName: string;
   customerPhoneNumber: string;
   price: number;
-  recurrenceType?: RecurrenceType,
-}
-
-export enum RecurrenceType {
-  NextWeek = 'NextWeek',
-  NextMonth = 'NextMonth',
+  hasRecurrence: boolean;
 }

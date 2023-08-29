@@ -1,11 +1,10 @@
 import styles from "./styles.module.css";
 import { ModalSteps } from "./shared";
-import { Button, Modal, Typography } from "antd";
+import { Button, Modal, Popconfirm, Typography } from "antd";
 import { Appointment } from "@/services/appointment/interfaces";
 import { AppointmentService } from "@/services/appointment";
-import { AxiosResponse } from "axios";
 import { getUTCString } from "@/utils/date";
-import { ExclamationCircleFilled } from "@ant-design/icons";
+import { useState } from "react";
 
 type Props = {
   courtId: number;
@@ -33,6 +32,8 @@ const CustomFooter = ({
 }: Props) => {
   const { Text } = Typography;
 
+  const [openPopconfirm, setOpenPopconfirm] = useState(false);
+
   const OkModal = {
     title: "Alterações salvas!",
     content: (
@@ -58,15 +59,34 @@ const CustomFooter = ({
 
   const ConfirmModal = {
     title: "Você deseja realmente cancelar esse agendamento?",
-    icon: <ExclamationCircleFilled />,
     content: (
       <Text>
         Após deletar, não será possível a reversão do horário, apenas o marcando
         novamente.
       </Text>
     ),
+    cancelText: "Cancelar",
     onOk() {
-      handleDelete();
+      handleDelete(false);
+    },
+  };
+
+  const ConfirmWithRecurrenceModal = {
+    title: "Você deseja realmente cancelar esse agendamento?",
+    content: (
+      <div className={styles.input}>
+        <Text>
+          Após deletar, não será possível a reversão do horário, apenas o
+          marcando novamente.
+        </Text>
+        <Text type="warning">
+          *** ATENÇÃO: Você está cancelando também os agendamentos recorrentes
+        </Text>
+      </div>
+    ),
+    cancelText: "Cancelar",
+    onOk() {
+      handleDelete(true);
     },
   };
 
@@ -74,10 +94,7 @@ const CustomFooter = ({
     setConfirmLoading(true);
     if (selectedAppointment?.id) {
       AppointmentService.updateAppointment(courtId, selectedAppointment)
-        .then((response: AxiosResponse) => {
-          if (![200, 201, 204].includes(response.status)) throw Error;
-          Modal.info(OkModal);
-        })
+        .then(() => Modal.info(OkModal))
         .catch((err) => {
           console.log(err);
           Modal.error(ErrorModal);
@@ -92,12 +109,9 @@ const CustomFooter = ({
         customerName: selectedAppointment?.customerName,
         customerPhoneNumber: selectedAppointment?.customerPhoneNumber,
         price: selectedAppointment?.price,
-        recurrenceType: selectedAppointment?.recurrenceType,
+        hasRecurrence: selectedAppointment?.hasRecurrence,
       } as Appointment)
-        .then((response: AxiosResponse) => {
-          if (![200, 201, 204].includes(response.status)) throw Error;
-          Modal.info(OkModal);
-        })
+        .then(() => Modal.info(OkModal))
         .catch((err) => {
           console.log(err);
           Modal.error(ErrorModal);
@@ -108,17 +122,41 @@ const CustomFooter = ({
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = (removeRecurrence: boolean) => {
     if (selectedAppointment?.id) {
-      AppointmentService.deleteAppointment(courtId, selectedAppointment.id)
-        .then((response: AxiosResponse) => {
-          if (![200, 201, 204].includes(response.status)) throw Error;
-          Modal.info(OkModal);
-        })
+      AppointmentService.deleteAppointment(
+        courtId,
+        selectedAppointment.id,
+        selectedAppointment.hasRecurrence && removeRecurrence
+      )
+        .then(() => Modal.info(OkModal))
         .catch((err) => {
           console.log(err);
           Modal.error(ErrorModal);
         });
+    }
+  };
+
+  const confirm = () => {
+    setOpenPopconfirm(false);
+    Modal.confirm(ConfirmWithRecurrenceModal)
+  };
+
+  const cancel = () => {
+    setOpenPopconfirm(false);
+    Modal.confirm(ConfirmModal)
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      setOpenPopconfirm(newOpen);
+      return;
+    }
+    // Determining condition before show the popconfirm.
+    if (selectedAppointment?.hasRecurrence) {
+      setOpenPopconfirm(newOpen);
+    } else {
+      cancel(); // next step
     }
   };
 
@@ -133,14 +171,21 @@ const CustomFooter = ({
       )}
       {currentStep === ModalSteps.step2 && (
         <div className={styles.space}>
-          <Button
-            danger
-            type="text"
-            disabled={!selectedAppointment?.id}
-            onClick={() => Modal.confirm(ConfirmModal)}
+          <Popconfirm
+            title="Agendamento com recorrência"
+            description="Cancelar também os agendamentos recorrentes?"
+            open={openPopconfirm}
+            onOpenChange={handleOpenChange}
+            onConfirm={confirm}
+            onCancel={cancel}
+            okText="Sim"
+            cancelText="Não"
           >
-            Cancelar horário
-          </Button>
+            <Button danger type="text" disabled={!selectedAppointment?.id}>
+              Cancelar horário
+            </Button>
+          </Popconfirm>
+
           <div className={styles.gap}>
             <Button
               key="back"

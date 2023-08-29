@@ -2,18 +2,17 @@ import styles from "./styles.module.css";
 import { ModalSteps } from "./shared";
 import {
   Button,
+  Checkbox,
   Input,
   InputNumber,
-  Radio,
-  RadioChangeEvent,
   Spin,
-  Switch,
   Typography,
 } from "antd";
-import { Appointment, RecurrenceType } from "@/services/appointment/interfaces";
+import { Appointment } from "@/services/appointment/interfaces";
 import { getHours } from "@/utils/date";
 import { zeroPad } from "@/utils/number";
 import { phoneMask } from "@/utils/string";
+import { CheckboxChangeEvent } from "antd/es/checkbox";
 
 type Props = {
   appointments: Appointment[];
@@ -55,28 +54,26 @@ const Content = ({
         <>
           {currentStep === ModalSteps.step1 && (
             <>
-              {getHours(8, 23).map(
-                (hour: number, index: number) => {
-                  var formattedHour = `${zeroPad(hour)}:00:00`;
-                  var appointment = appointments.find(
-                    (a: Appointment) => a.time === formattedHour
-                  );
-                  return (
-                    <Button
-                      key={`hour_${index}`}
-                      type="primary"
-                      className={!!appointment ? styles.grayButton : ""}
-                      onClick={() => {
-                        setSelectedHour(formattedHour);
-                        setSelectedAppointment(appointment);
-                        setCurrentStep(ModalSteps.step2);
-                      }}
-                    >
-                      {formattedHour.substring(0, 5)}
-                    </Button>
-                  );
-                }
-              )}
+              {getHours(8, 23).map((hour: number, index: number) => {
+                var formattedHour = `${zeroPad(hour)}:00:00`;
+                var appointment = appointments.find(
+                  (a: Appointment) => a.time === formattedHour
+                );
+                return (
+                  <Button
+                    key={`hour_${index}`}
+                    type="primary"
+                    className={!!appointment ? styles.grayButton : ""}
+                    onClick={() => {
+                      setSelectedHour(formattedHour);
+                      setSelectedAppointment(appointment);
+                      setCurrentStep(ModalSteps.step2);
+                    }}
+                  >
+                    {formattedHour.substring(0, 5)}
+                  </Button>
+                );
+              })}
             </>
           )}
           {currentStep === ModalSteps.step2 && (
@@ -139,45 +136,21 @@ const Content = ({
                 />
               </div>
               <div className={styles.input}>
-                <div className={`${styles.space} ${styles.centralizedItems}`}>
-                  <Text strong>{"Recorrência:"}</Text>
-                  <Switch
-                    size="small"
-                    checked={!!selectedAppointment?.recurrenceType}
-                    onChange={(checked: boolean) => {
-                      setSelectedAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            recurrenceType: checked
-                              ? RecurrenceType.NextWeek
-                              : undefined,
-                          } as Appointment)
-                      );
-                    }}
-                    disabled={!!selectedAppointment?.id}
-                  />
-                </div>
-                {selectedAppointment?.recurrenceType && (
-                  <Radio.Group
-                    value={selectedAppointment?.recurrenceType}
-                    disabled={!!selectedAppointment?.id}
-                    onChange={(e: RadioChangeEvent) => {
-                      setSelectedAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            recurrenceType: e.target.value,
-                          } as Appointment)
-                      );
-                    }}
-                  >
-                    <Radio value={RecurrenceType.NextWeek}>
-                      Próxima semana
-                    </Radio>
-                    <Radio value={RecurrenceType.NextMonth}>Próximo mês</Radio>
-                  </Radio.Group>
-                )}
+                <Checkbox
+                  checked={selectedAppointment?.hasRecurrence}
+                  onChange={(e: CheckboxChangeEvent) => {
+                    setSelectedAppointment(
+                      (prevAppointment) =>
+                        ({
+                          ...prevAppointment,
+                          hasRecurrence: e.target.checked,
+                        } as Appointment)
+                    );
+                  }}
+                  disabled={!!selectedAppointment?.id}
+                >
+                  <Text strong>{"Recorrência"}</Text>
+                </Checkbox>
               </div>
             </div>
           )}

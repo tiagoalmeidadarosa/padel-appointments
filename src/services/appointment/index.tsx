@@ -23,13 +23,13 @@ export class AppointmentService {
       customerName: appointment.customerName,
       customerPhoneNumber: appointment.customerPhoneNumber,
       price: appointment?.price,
-      recurrenceType: appointment.recurrenceType,
+      hasRecurrence: appointment.hasRecurrence,
     });
   }
 
-  static deleteAppointment(courtId: number, appointmentId: number) {
+  static deleteAppointment(courtId: number, appointmentId: number, removeRecurrence: boolean) {
     return httpClient.delete(
-      `/courts/${courtId}/appointments/${appointmentId}`
+      `/courts/${courtId}/appointments/${appointmentId}?removeRecurrence=${removeRecurrence}`
     );
   }
 }
