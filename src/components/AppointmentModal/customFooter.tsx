@@ -1,10 +1,11 @@
 import styles from "./styles.module.css";
 import { ModalSteps } from "./shared";
-import { Button, Modal, Popconfirm, Typography } from "antd";
+import { Button, Modal, notification, Popconfirm, Typography } from "antd";
 import { Appointment } from "@/services/appointment/interfaces";
 import { AppointmentService } from "@/services/appointment";
 import { getUTCString } from "@/utils/date";
 import { useState } from "react";
+import React from "react";
 
 type Props = {
   courtId: number;
@@ -32,29 +33,39 @@ const CustomFooter = ({
 }: Props) => {
   const { Text } = Typography;
 
+  const [api, contextHolder] = notification.useNotification();
   const [openPopconfirm, setOpenPopconfirm] = useState(false);
 
-  const OkModal = {
-    title: "Alterações salvas!",
-    content: (
-      <Text>
-        Agendamento {selectedAppointment?.id ? "editado" : "adicionado"} com
-        sucesso.
-      </Text>
-    ),
-    onOk() {
-      window.location.reload();
-    },
-  };
+  type NotificationType = "success" | "info" | "warning" | "error";
 
-  const ErrorModal = {
-    title: "Erro!",
-    content: (
-      <Text>
-        Não foi possível {selectedAppointment?.id ? "editar" : "adicionar"}{" "}
-        agendamento.
-      </Text>
-    ),
+  const openNotification = (type: NotificationType) => {
+    const placement = "topLeft";
+    if (type === "error") {
+      api[type]({
+        message: "Erro!",
+        description: (
+          <Text>
+            Não foi possível {selectedAppointment?.id ? "editar" : "adicionar"}{" "}
+            agendamento.
+          </Text>
+        ),
+        placement,
+      });
+    } else {
+      api[type]({
+        message: "Alterações salvas!",
+        description: (
+          <Text>
+            Agendamento {selectedAppointment?.id ? "editado" : "adicionado"} com
+            sucesso.
+          </Text>
+        ),
+        placement,
+      });
+      setTimeout(function () {
+        window.location.reload();
+      }, 3000);
+    }
   };
 
   const ConfirmModal = {
@@ -94,10 +105,10 @@ const CustomFooter = ({
     setConfirmLoading(true);
     if (selectedAppointment?.id) {
       AppointmentService.updateAppointment(courtId, selectedAppointment)
-        .then(() => Modal.info(OkModal))
+        .then(() => openNotification("success"))
         .catch((err) => {
           console.log(err);
-          Modal.error(ErrorModal);
+          openNotification("error");
         })
         .finally(() => {
           setConfirmLoading(false);
@@ -111,10 +122,10 @@ const CustomFooter = ({
         price: selectedAppointment?.price,
         hasRecurrence: selectedAppointment?.hasRecurrence,
       } as Appointment)
-        .then(() => Modal.info(OkModal))
+        .then(() => openNotification("success"))
         .catch((err) => {
           console.log(err);
-          Modal.error(ErrorModal);
+          openNotification("error");
         })
         .finally(() => {
           setConfirmLoading(false);
@@ -129,22 +140,22 @@ const CustomFooter = ({
         selectedAppointment.id,
         selectedAppointment.hasRecurrence && removeRecurrence
       )
-        .then(() => Modal.info(OkModal))
+        .then(() => openNotification("success"))
         .catch((err) => {
           console.log(err);
-          Modal.error(ErrorModal);
+          openNotification("error");
         });
     }
   };
 
   const confirm = () => {
     setOpenPopconfirm(false);
-    Modal.confirm(ConfirmWithRecurrenceModal)
+    Modal.confirm(ConfirmWithRecurrenceModal);
   };
 
   const cancel = () => {
     setOpenPopconfirm(false);
-    Modal.confirm(ConfirmModal)
+    Modal.confirm(ConfirmModal);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -162,6 +173,7 @@ const CustomFooter = ({
 
   return (
     <>
+      {contextHolder}
       {currentStep === ModalSteps.step1 && (
         <div className={styles.end}>
           <Button key="back" onClick={resetModal}>
