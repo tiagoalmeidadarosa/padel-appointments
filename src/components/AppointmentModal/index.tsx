@@ -90,7 +90,6 @@ export default function AppointmentModal(props: Props) {
         isLoading,
         currentStep,
         selectedAppointment,
-        selectedDate,
         setCurrentStep,
         setSelectedHour,
         setSelectedAppointment,
