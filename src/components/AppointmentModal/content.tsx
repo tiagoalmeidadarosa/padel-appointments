@@ -12,7 +12,6 @@ import {
 } from "antd";
 import { Appointment, RecurrenceType } from "@/services/appointment/interfaces";
 import { getHours } from "@/utils/date";
-import { UserOutlined, PhoneOutlined } from "@ant-design/icons";
 import { zeroPad } from "@/utils/number";
 import { phoneMask } from "@/utils/string";
 
@@ -21,7 +20,6 @@ type Props = {
   isLoading: boolean;
   currentStep: ModalSteps;
   selectedAppointment: Appointment | undefined;
-  selectedDate: Date;
   setCurrentStep: React.Dispatch<React.SetStateAction<ModalSteps>>;
   setSelectedHour: React.Dispatch<React.SetStateAction<string | undefined>>;
   setSelectedAppointment: React.Dispatch<
@@ -33,7 +31,6 @@ const Content = ({
   isLoading,
   currentStep,
   selectedAppointment,
-  selectedDate,
   setCurrentStep,
   setSelectedHour,
   setSelectedAppointment,
@@ -58,7 +55,7 @@ const Content = ({
         <>
           {currentStep === ModalSteps.step1 && (
             <>
-              {getHours(selectedDate, 8, 23).map(
+              {getHours(8, 23).map(
                 (hour: number, index: number) => {
                   var formattedHour = `${zeroPad(hour)}:00:00`;
                   var appointment = appointments.find(

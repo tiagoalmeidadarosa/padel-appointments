@@ -16,15 +16,8 @@ const interval = (x: number, y: number) => {
   return result;
 };
 
-export const getHours = (date: Date, xInterval: number, yInterval: number) => {
-  let today = new Date();
-  let currentHour = date.getHours();
-
+export const getHours = (xInterval: number, yInterval: number) => {
   let hours = interval(xInterval, yInterval);
-  if (today.toDateString() === date.toDateString()) {
-    hours = hours.filter((h: number) => h >= currentHour);
-  }
-
   return hours;
 };
 

@@ -64,7 +64,7 @@ const FreeCourts = ({ imagePoints, onSelect }: Props) => {
                 >
                   <div className={styles.buttons}>
                     <>
-                      {getHours(new Date(), 18, 22).map(
+                      {getHours(18, 22).map(
                         (hour: number, index: number) => {
                           var courtId = parseInt(imagePoint.id);
                           var appointments = courtsAppointments?.find(
