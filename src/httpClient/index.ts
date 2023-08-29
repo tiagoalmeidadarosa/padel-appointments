@@ -27,7 +27,6 @@ httpClient.interceptors.response.use(
   async function (error) {
     if (error?.response?.status === 401) {
       signOut();
-      window.location.href = "/auth/login";
     }
     return Promise.reject(error);
   }

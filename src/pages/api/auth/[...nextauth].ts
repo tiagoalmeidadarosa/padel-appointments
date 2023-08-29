@@ -1,4 +1,4 @@
-import { LoginService } from "@/services/login"
+import { AuthService } from "@/services/auth"
 import NextAuth from "next-auth"
 import type { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -14,16 +14,16 @@ export const authOptions: AuthOptions = {
       },
       async authorize (credentials, req) {
         if (typeof credentials !== "undefined") {
-          const { data } = await LoginService.login(credentials.username, credentials.password);
+          const { data } = await AuthService.login(credentials.username, credentials.password);
           if (typeof data !== "undefined") {
-            return { ...data.user, apiToken: data.access_token }
+            return { ...data.user, apiToken: data.token }
           } else {
             return null
           }
         } else {
           return null
         }
-      }
+      },
     })
   ],
   session: { strategy: "jwt" },

@@ -1,7 +1,7 @@
 import { httpClient } from "@/httpClient";
 
-export class LoginService {
+export class AuthService {
   static login(username: string, password: string) {
-    return httpClient.post(`/login`, { username, password });
+    return httpClient.post(`/auth/login`, { username, password });
   }
 }
