@@ -1,13 +1,6 @@
 import styles from "./styles.module.css";
 import { ModalSteps } from "./shared";
-import {
-  Button,
-  Checkbox,
-  Input,
-  InputNumber,
-  Spin,
-  Typography,
-} from "antd";
+import { Button, Checkbox, Input, InputNumber, Spin, Typography } from "antd";
 import { Appointment } from "@/services/appointment/interfaces";
 import { getHours } from "@/utils/date";
 import { zeroPad } from "@/utils/number";
@@ -54,10 +47,9 @@ const Content = ({
         <>
           {currentStep === ModalSteps.step1 && (
             <>
-              {getHours(8, 23).map((hour: number, index: number) => {
-                var formattedHour = `${zeroPad(hour)}:00:00`;
-                var appointment = appointments.find(
-                  (a: Appointment) => a.time === formattedHour
+              {getHours(8, 23).map((hour: string, index: number) => {
+                let appointment = appointments.find(
+                  (a: Appointment) => a.time === hour
                 );
                 return (
                   <Button
@@ -65,12 +57,12 @@ const Content = ({
                     type="primary"
                     className={!!appointment ? styles.grayButton : ""}
                     onClick={() => {
-                      setSelectedHour(formattedHour);
+                      setSelectedHour(hour);
                       setSelectedAppointment(appointment);
                       setCurrentStep(ModalSteps.step2);
                     }}
                   >
-                    {formattedHour.substring(0, 5)}
+                    {hour.substring(0, 5)}
                   </Button>
                 );
               })}

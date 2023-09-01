@@ -1,4 +1,5 @@
 import format from "date-fns/format";
+import { zeroPad } from "./number";
 
 export const addDays = (date: Date, days: number) => {
   var result = new Date(date);
@@ -6,18 +7,12 @@ export const addDays = (date: Date, days: number) => {
   return result;
 };
 
-const interval = (x: number, y: number) => {
-  let result = [];
-  let i = x;
-  while (i <= y) {
-    result.push(i);
-    i++;
-  }
-  return result;
-};
-
 export const getHours = (xInterval: number, yInterval: number) => {
-  let hours = interval(xInterval, yInterval);
+  let hours: string[] = [];
+  for (let i = xInterval; i < yInterval; i++) {
+    let hour = zeroPad(i);
+    hours.push(`${hour}:00:00`, `${hour}:30:00`);
+  }
   return hours;
 };
 

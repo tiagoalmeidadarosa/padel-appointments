@@ -64,37 +64,30 @@ const FreeCourts = ({ imagePoints, onSelect }: Props) => {
                 >
                   <div className={styles.buttons}>
                     <>
-                      {getHours(18, 22).map(
-                        (hour: number, index: number) => {
-                          var courtId = parseInt(imagePoint.id);
-                          var appointments = courtsAppointments?.find(
-                            (ca: CourtAppointment) => ca.id === courtId
-                          )?.appointments;
+                      {getHours(18, 22).map((hour: string, index: number) => {
+                        let courtId = parseInt(imagePoint.id);
+                        let appointments = courtsAppointments?.find(
+                          (ca: CourtAppointment) => ca.id === courtId
+                        )?.appointments;
 
-                          var formattedHour = `${zeroPad(hour)}:00:00`;
-                          var appointment = appointments?.find(
-                            (a: Appointment) => a.time === formattedHour
-                          );
-                          if (appointment) {
-                            return;
-                          }
-                          return (
-                            <Button
-                              key={`hour_${index}`}
-                              type="primary"
-                              onClick={() =>
-                                onSelect(
-                                  courtId,
-                                  ModalSteps.step2,
-                                  formattedHour
-                                )
-                              }
-                            >
-                              {formattedHour.substring(0, 5)}
-                            </Button>
-                          );
+                        let appointment = appointments?.find(
+                          (a: Appointment) => a.time === hour
+                        );
+                        if (appointment) {
+                          return;
                         }
-                      )}
+                        return (
+                          <Button
+                            key={`hour_${index}`}
+                            type="primary"
+                            onClick={() =>
+                              onSelect(courtId, ModalSteps.step2, hour)
+                            }
+                          >
+                            {hour.substring(0, 5)}
+                          </Button>
+                        );
+                      })}
                     </>
                   </div>
                 </Card>
