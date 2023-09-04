@@ -7,7 +7,7 @@
 }
 
 .content > button {
-  width: 70px;
+  width: 90px;
 }
 
 .center {
@@ -57,4 +57,15 @@
   background-color: #A9A9A9 !important;
   border-color: lightgray !important;
   color: whitesmoke !important;
+}
+
+.orangeButton {
+  background-color: #fa8c16;
+  border-color: #fa8c16;
+  color: white;
+}
+.orangeButton:hover:not([disabled]) {
+  background-color: #fa8c16 !important;
+  border-color: #fa8c16 !important;
+  color: white !important;
 }

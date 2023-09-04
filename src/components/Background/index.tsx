@@ -5,8 +5,7 @@ import React from "react";
 import ImageMapper from "react-img-mapper";
 import styles from "./styles.module.css";
 import { ImagePoint } from "./interfaces";
-import { ModalSteps } from "../AppointmentModal/shared";
-import FreeCourts from "./freeCourts";
+import { ModalSteps } from "../../shared";
 
 type Props = {
   onClick: (courtId: number, step?: ModalSteps, hour?: string) => void;
@@ -65,7 +64,6 @@ const Background = (props: Props) => {
           />
         </div>
       </div>
-      <FreeCourts imagePoints={imagePoints} onSelect={onClick} />
     </>
   );
 };

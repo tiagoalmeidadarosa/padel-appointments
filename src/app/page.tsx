@@ -2,7 +2,7 @@
 import { Rubik } from "@next/font/google";
 import styles from "./page.module.css";
 import { useState } from "react";
-import AppointmentModal from "@/components/AppointmentModal";
+import AppointmentModal from "@/components/AppointmentDrawer";
 import Background from "@/components/Background";
 import { ModalSteps } from "@/components/AppointmentModal/shared";
 import { ConfigProvider } from "antd";
