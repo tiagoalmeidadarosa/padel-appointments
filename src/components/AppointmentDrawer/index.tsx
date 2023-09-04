@@ -38,20 +38,16 @@ type Props = {
   show: boolean;
   courtId: number;
   onCancel: () => void;
-  step?: ModalSteps;
-  hour?: string;
 };
 export default function AppointmentModal(props: Props) {
-  const { onCancel, courtId, show, step, hour } = props;
+  const { onCancel, courtId, show } = props;
 
   const [api, contextHolder] = notification.useNotification();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [currentStep, setCurrentStep] = useState<ModalSteps>(
-    step || ModalSteps.step1
-  );
+  const [currentStep, setCurrentStep] = useState<ModalSteps>(ModalSteps.step1);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSchedules, setSelectedSchedules] = useState<Schedule[]>([]);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment>();
@@ -389,7 +385,9 @@ export default function AppointmentModal(props: Props) {
                       }
                       onClick={() => {
                         if (hasSchedule) {
-                          let schedule = schedules.find((s: Schedule) => s.time === hour) as Schedule;
+                          let schedule = schedules.find(
+                            (s: Schedule) => s.time === hour
+                          ) as Schedule;
                           setSelectedSchedules([schedule]);
                           setAppointment(schedule.appointment);
                           setCurrentStep(ModalSteps.step2);

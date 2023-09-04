@@ -4,7 +4,6 @@ import styles from "./page.module.css";
 import { useState } from "react";
 import AppointmentModal from "@/components/AppointmentDrawer";
 import Background from "@/components/Background";
-import { ModalSteps } from "@/components/AppointmentModal/shared";
 import { ConfigProvider } from "antd";
 
 const rubik = Rubik({
@@ -15,17 +14,11 @@ const rubik = Rubik({
 export default function Home() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedCourtId, setSelectedCourtId] = useState<number>();
-  const [selectedStep, setSelectedStep] = useState<ModalSteps>();
-  const [selectedHour, setSelectedHour] = useState<string>();
 
   const handleSelectedCourt = (
     courtId: number,
-    step?: ModalSteps,
-    hour?: string
   ) => {
     setSelectedCourtId(courtId);
-    setSelectedStep(step);
-    setSelectedHour(hour);
     setOpenModal(true);
   };
 
@@ -48,8 +41,6 @@ export default function Home() {
               setSelectedCourtId(undefined);
               setOpenModal(false);
             }}
-            step={selectedStep}
-            hour={selectedHour}
           />
         )}
       </main>
