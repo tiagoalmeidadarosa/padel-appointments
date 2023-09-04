@@ -6,6 +6,9 @@ import ImageMapper from "react-img-mapper";
 import styles from "./styles.module.css";
 import { ImagePoint } from "./interfaces";
 import { ModalSteps } from "../../shared";
+import { Button } from "antd";
+import { signOut } from "next-auth/react";
+import { LogoutOutlined } from "@ant-design/icons";
 
 type Props = {
   onClick: (courtId: number, step?: ModalSteps, hour?: string) => void;
@@ -63,6 +66,11 @@ const Background = (props: Props) => {
             onClick={(area: any) => onClick(area.id)}
           />
         </div>
+      </div>
+      <div className={styles.absolute}>
+        <Button icon={<LogoutOutlined />} type="text" onClick={() => signOut()}>
+          Logout
+        </Button>
       </div>
     </>
   );
