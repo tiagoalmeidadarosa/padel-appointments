@@ -266,6 +266,13 @@ export default function AppointmentModal(props: Props) {
       }
     };
 
+    const handleBack = () => {
+      if (selectedAppointment?.id) {
+        setSelectedSchedules([]);
+      }
+      setCurrentStep(ModalSteps.step1);
+    };
+
     return (
       <>
         {currentStep === ModalSteps.step1 && (
@@ -304,10 +311,7 @@ export default function AppointmentModal(props: Props) {
             </Popconfirm>
 
             <div className={styles.gap}>
-              <Button
-                key="back"
-                onClick={() => setCurrentStep(ModalSteps.step1)}
-              >
+              <Button key="back" onClick={handleBack}>
                 Voltar
               </Button>
               <Button
@@ -384,6 +388,7 @@ export default function AppointmentModal(props: Props) {
                         )
                       }
                       onClick={() => {
+                        if (hasSchedule && selectedSchedules.length > 0) return;
                         if (hasSchedule) {
                           let schedule = schedules.find(
                             (s: Schedule) => s.time === hour
