@@ -3,8 +3,8 @@ import { Rubik } from "@next/font/google";
 import styles from "./page.module.css";
 import { useState } from "react";
 import AppointmentModal from "@/components/AppointmentDrawer";
-import Background from "@/components/Background";
 import { ConfigProvider } from "antd";
+import dynamic from "next/dynamic";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -15,12 +15,14 @@ export default function Home() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedCourtId, setSelectedCourtId] = useState<number>();
 
-  const handleSelectedCourt = (
-    courtId: number,
-  ) => {
+  const handleSelectedCourt = (courtId: number) => {
     setSelectedCourtId(courtId);
     setOpenModal(true);
   };
+
+  const Background = dynamic(() => import("@/components/Background"), {
+    ssr: false,
+  });
 
   return (
     <ConfigProvider
