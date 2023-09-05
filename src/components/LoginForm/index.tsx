@@ -6,8 +6,15 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
-export default function LoginForm() {
+type Props = {
+  error: string | null;
+};
+export default function LoginForm({ error }: Props) {
   const [isLoading, setIsLoading] = useState(false);
+
+  const errorMessage = error?.includes("401")
+    ? "Usuário ou senha incorretos"
+    : error;
 
   const onFinish = async (values: any) => {
     setIsLoading(true);
@@ -75,6 +82,7 @@ export default function LoginForm() {
               Log in
             </Button>
           </Form.Item>
+          {errorMessage && <div className={styles.error}>{errorMessage}</div>}
         </Form>
       </div>
     </div>
