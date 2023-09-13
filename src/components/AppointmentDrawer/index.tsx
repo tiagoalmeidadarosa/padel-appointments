@@ -33,6 +33,7 @@ import {
 import { addDays } from "@/utils/date";
 import moment from "moment";
 import "moment/locale/pt-br";
+import ItemsConsumedTable from "../ItemsConsumedTable";
 
 type Props = {
   show: boolean;
@@ -191,13 +192,14 @@ export default function AppointmentModal(props: Props) {
       },
     };
 
-    const handleOk = () => {
+    const handleSave = () => {
       setConfirmLoading(true);
       if (selectedAppointment?.id) {
         AppointmentService.updateAppointment(selectedAppointment.id, {
           customerName: selectedAppointment.customerName,
           customerPhoneNumber: selectedAppointment.customerPhoneNumber,
           price: selectedAppointment.price,
+          itemsConsumed: selectedAppointment?.itemsConsumed,
         } as UpdateAppointmentRequest)
           .then(() => openNotification("success"))
           .catch((err) => {
@@ -215,6 +217,7 @@ export default function AppointmentModal(props: Props) {
           price: selectedAppointment?.price,
           hasRecurrence: selectedAppointment?.hasRecurrence,
           schedules: selectedSchedules,
+          itemsConsumed: selectedAppointment?.itemsConsumed,
         } as AppointmentRequest)
           .then(() => openNotification("success"))
           .catch((err) => {
@@ -303,7 +306,7 @@ export default function AppointmentModal(props: Props) {
               onConfirm={confirm}
               onCancel={cancel}
               okText="Sim"
-              cancelText="Não"
+              cancelText="Não, somente esse"
             >
               <Button danger type="text" disabled={!selectedAppointment?.id}>
                 Cancelar horário
@@ -318,14 +321,14 @@ export default function AppointmentModal(props: Props) {
                 key="submit"
                 type="primary"
                 loading={confirmLoading}
-                onClick={handleOk}
+                onClick={handleSave}
                 disabled={
                   !selectedAppointment?.customerName ||
                   !selectedAppointment?.customerPhoneNumber ||
                   !selectedAppointment?.price
                 }
               >
-                Ok
+                Salvar
               </Button>
             </div>
           </div>
@@ -341,6 +344,9 @@ export default function AppointmentModal(props: Props) {
     >
   ) => {
     const { Text } = Typography;
+    const [dividedPriceBy, setDividedPriceBy] = useState<number>(4);
+
+    const isEditing = !!appointment?.id;
 
     const handlePhoneKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
       let value = (e.target as HTMLInputElement).value;
@@ -354,155 +360,184 @@ export default function AppointmentModal(props: Props) {
     };
 
     return (
-      <div className={styles.content}>
-        {isLoading && <Spin />}
-        {!isLoading && (
-          <>
-            {currentStep === ModalSteps.step1 && (
-              <>
-                {getHours(8, 23).map((hour: string, index: number) => {
-                  let hasSchedule =
-                    schedules.find((s: Schedule) => s.time === hour) !==
-                    undefined;
-                  let isSelected = selectedSchedules.find(
-                    (s) => s.time === hour
-                  );
-                  const getClassName = () => {
-                    if (hasSchedule) {
-                      return styles.grayButton;
-                    } else if (isSelected) {
-                      return styles.orangeButton;
-                    }
-                    return "";
-                  };
-                  return (
-                    <Button
-                      key={`hour_${index}`}
-                      type={"primary"}
-                      className={getClassName()}
-                      icon={
-                        isSelected && !hasSchedule ? (
-                          <CheckSquareOutlined />
-                        ) : (
-                          <span />
-                        )
+      <>
+        <div className={styles.content}>
+          {isLoading && <Spin />}
+          {!isLoading && (
+            <>
+              {currentStep === ModalSteps.step1 && (
+                <>
+                  {getHours(8, 23).map((hour: string, index: number) => {
+                    let hasSchedule =
+                      schedules.find((s: Schedule) => s.time === hour) !==
+                      undefined;
+                    let isSelected = selectedSchedules.find(
+                      (s) => s.time === hour
+                    );
+                    const getClassName = () => {
+                      if (hasSchedule) {
+                        return styles.grayButton;
+                      } else if (isSelected) {
+                        return styles.orangeButton;
                       }
-                      onClick={() => {
-                        if (hasSchedule && selectedSchedules.length > 0) return;
-                        if (hasSchedule) {
-                          let schedule = schedules.find(
-                            (s: Schedule) => s.time === hour
-                          ) as Schedule;
-                          setSelectedSchedules([schedule]);
-                          setAppointment(schedule.appointment);
-                          setCurrentStep(ModalSteps.step2);
-                        } else {
-                          if (isSelected) {
-                            setSelectedSchedules((prevState) =>
-                              prevState.filter((s) => s.time !== hour)
-                            );
-                          } else {
-                            setSelectedSchedules((prevState) => [
-                              ...prevState,
-                              {
-                                date: getUTCString(selectedDate) as string,
-                                time: hour,
-                                courtId: courtId,
-                              } as Schedule,
-                            ]);
-                          }
+                      return "";
+                    };
+                    return (
+                      <Button
+                        key={`hour_${index}`}
+                        type={"primary"}
+                        className={getClassName()}
+                        icon={
+                          isSelected && !hasSchedule ? (
+                            <CheckSquareOutlined />
+                          ) : (
+                            <span />
+                          )
                         }
+                        onClick={() => {
+                          if (hasSchedule && selectedSchedules.length > 0)
+                            return;
+                          if (hasSchedule) {
+                            let schedule = schedules.find(
+                              (s: Schedule) => s.time === hour
+                            ) as Schedule;
+                            setSelectedSchedules([schedule]);
+                            setAppointment(schedule.appointment);
+                            setCurrentStep(ModalSteps.step2);
+                          } else {
+                            if (isSelected) {
+                              setSelectedSchedules((prevState) =>
+                                prevState.filter((s) => s.time !== hour)
+                              );
+                            } else {
+                              setSelectedSchedules((prevState) => [
+                                ...prevState,
+                                {
+                                  date: getUTCString(selectedDate) as string,
+                                  time: hour,
+                                  courtId: courtId,
+                                } as Schedule,
+                              ]);
+                            }
+                          }
+                        }}
+                      >
+                        {hour.substring(0, 5)}
+                      </Button>
+                    );
+                  })}
+                </>
+              )}
+              {currentStep === ModalSteps.step2 && (
+                <div className={styles.inputs}>
+                  <div className={styles.input}>
+                    <Text strong>{"Nome (obrigatório):"}</Text>
+                    <Input
+                      placeholder={"Digite o nome"}
+                      value={appointment?.customerName}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setAppointment(
+                          (prevAppointment) =>
+                            ({
+                              ...prevAppointment,
+                              customerName: e.target.value,
+                            } as Appointment)
+                        );
                       }}
+                    />
+                  </div>
+                  <div className={styles.input}>
+                    <Text strong>{"Telefone (obrigatório):"}</Text>
+                    <Input
+                      type="tel"
+                      maxLength={15}
+                      placeholder="Digite o telefone"
+                      value={appointment?.customerPhoneNumber}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setAppointment(
+                          (prevAppointment) =>
+                            ({
+                              ...prevAppointment,
+                              customerPhoneNumber: e.target.value,
+                            } as Appointment)
+                        );
+                      }}
+                      onKeyUp={handlePhoneKeyPress}
+                    />
+                  </div>
+                  <div className={styles.input}>
+                    <Text strong>{"Preço (obrigatório):"}</Text>
+                    <div className={styles.alignCenter}>
+                      <InputNumber
+                        min={0}
+                        value={appointment?.price}
+                        formatter={(value: number | undefined) =>
+                          `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
+                        parser={(value: string | undefined) =>
+                          value
+                            ? parseFloat(value?.replace(/\R\$\s?|(,*)/g, ""))
+                            : 0
+                        }
+                        onChange={(value: number | null) => {
+                          setAppointment(
+                            (prevAppointment) =>
+                              ({
+                                ...prevAppointment,
+                                price: value,
+                              } as Appointment)
+                          );
+                        }}
+                      />
+                      {isEditing && (
+                        <>
+                          <Text style={{ fontSize: "12px" }}>/</Text>
+                          <InputNumber
+                            min={1}
+                            value={dividedPriceBy}
+                            style={{ width: "50px" }}
+                            onChange={(value: number | null) => {
+                              if (!value) return;
+                              setDividedPriceBy(value);
+                            }}
+                          />
+                          <Text style={{ fontSize: "12px" }}>
+                            {`= R$ ${appointment?.price / dividedPriceBy}`}
+                          </Text>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <div className={styles.input}>
+                    <Checkbox
+                      checked={appointment?.hasRecurrence}
+                      onChange={(e: CheckboxChangeEvent) => {
+                        setAppointment(
+                          (prevAppointment) =>
+                            ({
+                              ...prevAppointment,
+                              hasRecurrence: e.target.checked,
+                            } as Appointment)
+                        );
+                      }}
+                      disabled={!!appointment?.id}
                     >
-                      {hour.substring(0, 5)}
-                    </Button>
-                  );
-                })}
-              </>
-            )}
-            {currentStep === ModalSteps.step2 && (
-              <div className={styles.inputs}>
-                <div className={styles.input}>
-                  <Text strong>{"Nome (obrigatório):"}</Text>
-                  <Input
-                    placeholder={"Digite o nome"}
-                    value={appointment?.customerName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            customerName: e.target.value,
-                          } as Appointment)
-                      );
-                    }}
-                  />
+                      <Text strong>{"Recorrência"}</Text>
+                    </Checkbox>
+                  </div>
+                  <div className={styles.input}>
+                    <Text strong>{"Itens consumidos:"}</Text>
+                    <ItemsConsumedTable
+                      appointment={appointment}
+                      setAppointment={setAppointment}
+                    />
+                  </div>
                 </div>
-                <div className={styles.input}>
-                  <Text strong>{"Telefone (obrigatório):"}</Text>
-                  <Input
-                    type="tel"
-                    maxLength={15}
-                    placeholder="Digite o telefone"
-                    value={appointment?.customerPhoneNumber}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            customerPhoneNumber: e.target.value,
-                          } as Appointment)
-                      );
-                    }}
-                    onKeyUp={handlePhoneKeyPress}
-                  />
-                </div>
-                <div className={styles.input}>
-                  <Text strong>{"Preço (obrigatório):"}</Text>
-                  <InputNumber
-                    min={0}
-                    value={appointment?.price}
-                    formatter={(value: number | undefined) =>
-                      `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    }
-                    parser={(value: string | undefined) =>
-                      value
-                        ? parseFloat(value?.replace(/\R\$\s?|(,*)/g, ""))
-                        : 0
-                    }
-                    onChange={(value: number | null) => {
-                      setAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            price: value,
-                          } as Appointment)
-                      );
-                    }}
-                  />
-                </div>
-                <div className={styles.input}>
-                  <Checkbox
-                    checked={appointment?.hasRecurrence}
-                    onChange={(e: CheckboxChangeEvent) => {
-                      setAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            hasRecurrence: e.target.checked,
-                          } as Appointment)
-                      );
-                    }}
-                    disabled={!!appointment?.id}
-                  >
-                    <Text strong>{"Recorrência"}</Text>
-                  </Checkbox>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+              )}
+            </>
+          )}
+        </div>
+      </>
     );
   };
 

@@ -5,6 +5,14 @@ export interface Appointment {
   customerPhoneNumber: string;
   price: number;
   hasRecurrence: boolean;
+  itemsConsumed: ItemConsumed[];
+}
+
+export interface ItemConsumed {
+  id: number;
+  quantity: number;
+  description: string;
+  price: number;
 }
 
 export interface Schedule {
@@ -21,10 +29,12 @@ export interface AppointmentRequest {
   customerPhoneNumber: string;
   price: number;
   schedules: Schedule[];
+  itemsConsumed: ItemConsumed[];
 }
 
 export interface UpdateAppointmentRequest {
   customerName: string;
   customerPhoneNumber: string;
   price: number;
+  itemsConsumed: ItemConsumed[];
 }
