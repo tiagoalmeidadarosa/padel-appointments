@@ -238,7 +238,6 @@ const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
         dataSource={dataSource}
         columns={columns as ColumnTypes}
         pagination={false}
-        className={styles.table}
       />
 
       <div className={styles.spaceBetween}>
