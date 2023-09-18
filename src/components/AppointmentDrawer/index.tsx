@@ -12,6 +12,7 @@ import {
   InputNumber,
   Spin,
   Space,
+  FloatButton,
 } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { AppointmentService } from "@/services/appointment";
@@ -34,6 +35,9 @@ import { addDays } from "@/utils/date";
 import moment from "moment";
 import "moment/locale/pt-br";
 import ItemsConsumedTable from "../ItemsConsumedTable";
+import Total from "../Total";
+import { CheckService } from "@/services/check";
+import { CheckRequest } from "@/services/check/interfaces";
 
 type Props = {
   show: boolean;
@@ -118,6 +122,11 @@ export default function AppointmentModal(props: Props) {
               .join(", ")}`}</Text>
           </div>
         )}
+        {currentStep === ModalSteps.step3 && (
+          <div className={styles.center}>
+            <Text>{`Comanda #${selectedAppointment?.check.id}`}</Text>
+          </div>
+        )}
       </>
     );
   };
@@ -127,6 +136,7 @@ export default function AppointmentModal(props: Props) {
 
     const [openPopconfirm, setOpenPopconfirm] = useState(false);
 
+    const isEditing = !!selectedAppointment?.id;
     type NotificationType = "success" | "info" | "warning" | "error";
 
     const openNotification = (type: NotificationType) => {
@@ -136,8 +146,7 @@ export default function AppointmentModal(props: Props) {
           message: "Erro!",
           description: (
             <Text>
-              Não foi possível{" "}
-              {selectedAppointment?.id ? "editar" : "adicionar"} agendamento.
+              Não foi possível {isEditing ? "editar" : "adicionar"} agendamento.
             </Text>
           ),
           placement,
@@ -147,8 +156,7 @@ export default function AppointmentModal(props: Props) {
           message: "Alterações salvas!",
           description: (
             <Text>
-              Agendamento {selectedAppointment?.id ? "editado" : "adicionado"}{" "}
-              com sucesso.
+              Agendamento {isEditing ? "editado" : "adicionado"} com sucesso.
             </Text>
           ),
           placement,
@@ -194,12 +202,11 @@ export default function AppointmentModal(props: Props) {
 
     const handleSave = () => {
       setConfirmLoading(true);
-      if (selectedAppointment?.id) {
+      if (isEditing) {
         AppointmentService.updateAppointment(selectedAppointment.id, {
           customerName: selectedAppointment.customerName,
           customerPhoneNumber: selectedAppointment.customerPhoneNumber,
           price: selectedAppointment.price,
-          itemsConsumed: selectedAppointment?.itemsConsumed,
         } as UpdateAppointmentRequest)
           .then(() => openNotification("success"))
           .catch((err) => {
@@ -217,7 +224,6 @@ export default function AppointmentModal(props: Props) {
           price: selectedAppointment?.price,
           hasRecurrence: selectedAppointment?.hasRecurrence,
           schedules: selectedSchedules,
-          itemsConsumed: selectedAppointment?.itemsConsumed,
         } as AppointmentRequest)
           .then(() => openNotification("success"))
           .catch((err) => {
@@ -228,6 +234,25 @@ export default function AppointmentModal(props: Props) {
             setConfirmLoading(false);
           });
       }
+    };
+
+    const handleSaveCheck = () => {
+      let check = selectedAppointment?.check;
+      if (!check?.id) return;
+      setConfirmLoading(true);
+      CheckService.updateCheck(check.id, {
+        priceDividedBy: check.priceDividedBy,
+        pricePaidFor: check.pricePaidFor,
+        itemsConsumed: check.itemsConsumed,
+      } as CheckRequest)
+        .then(() => openNotification("success"))
+        .catch((err) => {
+          console.log(err);
+          openNotification("error");
+        })
+        .finally(() => {
+          setConfirmLoading(false);
+        });
     };
 
     const handleDelete = (removeRecurrence: boolean) => {
@@ -256,7 +281,7 @@ export default function AppointmentModal(props: Props) {
     };
 
     const handleOpenChange = (newOpen: boolean) => {
-      if (!selectedAppointment?.id) return;
+      if (!isEditing) return;
       if (!newOpen) {
         setOpenPopconfirm(newOpen);
         return;
@@ -267,13 +292,6 @@ export default function AppointmentModal(props: Props) {
       } else {
         cancel(); // next step
       }
-    };
-
-    const handleBack = () => {
-      if (selectedAppointment?.id) {
-        setSelectedSchedules([]);
-      }
-      setCurrentStep(ModalSteps.step1);
     };
 
     return (
@@ -308,13 +326,21 @@ export default function AppointmentModal(props: Props) {
               okText="Sim"
               cancelText="Não, somente esse"
             >
-              <Button danger type="text" disabled={!selectedAppointment?.id}>
+              <Button danger type="text" disabled={!isEditing}>
                 Cancelar horário
               </Button>
             </Popconfirm>
 
             <div className={styles.gap}>
-              <Button key="back" onClick={handleBack}>
+              <Button
+                key="back"
+                onClick={() => {
+                  if (isEditing) {
+                    setSelectedSchedules([]);
+                  }
+                  setCurrentStep(ModalSteps.step1);
+                }}
+              >
                 Voltar
               </Button>
               <Button
@@ -333,6 +359,21 @@ export default function AppointmentModal(props: Props) {
             </div>
           </div>
         )}
+        {currentStep === ModalSteps.step3 && (
+          <Space className={styles.end}>
+            <Button key="back" onClick={() => setCurrentStep(ModalSteps.step2)}>
+              Voltar
+            </Button>
+            <Button
+              key="submit"
+              type="primary"
+              loading={confirmLoading}
+              onClick={handleSaveCheck}
+            >
+              Salvar
+            </Button>
+          </Space>
+        )}
       </>
     );
   };
@@ -344,7 +385,6 @@ export default function AppointmentModal(props: Props) {
     >
   ) => {
     const { Text } = Typography;
-    const [dividedPriceBy, setDividedPriceBy] = useState<number>(4);
 
     const isEditing = !!appointment?.id;
 
@@ -489,23 +529,6 @@ export default function AppointmentModal(props: Props) {
                           );
                         }}
                       />
-                      {isEditing && (
-                        <>
-                          <Text style={{ fontSize: "12px" }}>/</Text>
-                          <InputNumber
-                            min={1}
-                            value={dividedPriceBy}
-                            style={{ width: "50px" }}
-                            onChange={(value: number | null) => {
-                              if (!value) return;
-                              setDividedPriceBy(value);
-                            }}
-                          />
-                          <Text style={{ fontSize: "12px" }}>
-                            {`= R$ ${appointment?.price / dividedPriceBy}`}
-                          </Text>
-                        </>
-                      )}
                     </div>
                   </div>
                   <div className={styles.input}>
@@ -520,11 +543,22 @@ export default function AppointmentModal(props: Props) {
                             } as Appointment)
                         );
                       }}
-                      disabled={!!appointment?.id}
+                      disabled={isEditing}
                     >
                       <Text strong>{"Recorrência"}</Text>
                     </Checkbox>
                   </div>
+                  {isEditing && (
+                    <FloatButton
+                      tooltip="Comanda"
+                      style={{ bottom: "60px" }}
+                      onClick={() => setCurrentStep(ModalSteps.step3)}
+                    />
+                  )}
+                </div>
+              )}
+              {currentStep === ModalSteps.step3 && (
+                <div className={styles.inputs}>
                   <div className={styles.input}>
                     <Text strong>{"Itens consumidos:"}</Text>
                     <ItemsConsumedTable
@@ -532,6 +566,10 @@ export default function AppointmentModal(props: Props) {
                       setAppointment={setAppointment}
                     />
                   </div>
+                  <Total
+                    appointment={appointment}
+                    setAppointment={setAppointment}
+                  />
                 </div>
               )}
             </>

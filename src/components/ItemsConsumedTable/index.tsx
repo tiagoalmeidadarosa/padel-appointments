@@ -4,8 +4,8 @@ import { Button, Form, Input, Popconfirm, Table } from "antd";
 import type { FormInstance } from "antd/es/form";
 import { PlusOutlined } from "@ant-design/icons";
 import styles from "./styles.module.css";
-import { Appointment, ItemConsumed } from "@/services/appointment/interfaces";
-import { sumValuesFromArrayOfObjects } from "@/utils/array";
+import { Appointment } from "@/services/appointment/interfaces";
+import { ItemConsumed } from "@/services/check/interfaces";
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
@@ -126,10 +126,10 @@ const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
   appointment,
   setAppointment,
 }) => {
-  const { Text } = Typography;
+  const { Text, Link } = Typography;
 
   const [dataSource, setDataSource] = useState<ItemConsumed[]>(
-    appointment?.itemsConsumed || []
+    appointment?.check.itemsConsumed || []
   );
   const [count, setCount] = useState(dataSource.length);
 
@@ -140,7 +140,7 @@ const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
       (prevAppointment) =>
         ({
           ...prevAppointment,
-          itemsConsumed: dataSource,
+          check: { ...prevAppointment?.check, itemsConsumed: dataSource },
         } as Appointment)
     );
   }, [dataSource, setAppointment]);
@@ -177,7 +177,9 @@ const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
             title="Certeza que deseja remover?"
             onConfirm={() => handleRemove(record.id)}
           >
-            <a>Remover</a>
+            <Link style={{ fontSize: "12px", wordBreak: "keep-all" }}>
+              Remover
+            </Link>
           </Popconfirm>
         ) : null,
     },
@@ -189,6 +191,7 @@ const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
       quantity: 1,
       description: "Produto xxx",
       price: 0,
+      paid: false,
     };
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
@@ -229,7 +232,11 @@ const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
   });
 
   return (
-    <ConfigProvider renderEmpty={() => <Empty description="Nenhum item" />}>
+    <ConfigProvider
+      renderEmpty={() => (
+        <Empty description="Nenhum item" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      )}
+    >
       <Table
         size="small"
         components={components}
@@ -240,20 +247,13 @@ const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
         pagination={false}
       />
 
-      <div className={styles.spaceBetween}>
-        <Text style={{ fontSize: "12px" }}>
-          {isEditing &&
-            dataSource.length > 0 &&
-            `Total dos itens: R$ ${sumValuesFromArrayOfObjects(
-              dataSource,
-              "price"
-            )}`}
-        </Text>
+      <div className={styles.justifyEnd}>
         <Button
           icon={<PlusOutlined />}
           onClick={handleAdd}
           type="primary"
           size="small"
+          style={{ fontSize: "12px" }}
         >
           Novo item
         </Button>

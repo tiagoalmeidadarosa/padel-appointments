@@ -1,0 +1,28 @@
+.totalSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.totalContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.totalContainer span {
+  font-size: 12px;
+}
+
+.totalBodyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 0.25rem;
+}
+
+.alignCenter {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
