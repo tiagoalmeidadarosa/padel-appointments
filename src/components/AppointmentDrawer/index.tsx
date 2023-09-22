@@ -12,7 +12,6 @@ import {
   InputNumber,
   Spin,
   Space,
-  FloatButton,
 } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { AppointmentService } from "@/services/appointment";
@@ -30,6 +29,7 @@ import {
   LeftOutlined,
   RightOutlined,
   CheckSquareOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 import { addDays } from "@/utils/date";
 import moment from "moment";
@@ -549,11 +549,13 @@ export default function AppointmentModal(props: Props) {
                     </Checkbox>
                   </div>
                   {isEditing && (
-                    <FloatButton
-                      tooltip="Comanda"
-                      style={{ bottom: "60px" }}
+                    <Button
+                      type="link"
                       onClick={() => setCurrentStep(ModalSteps.step3)}
-                    />
+                      className={styles.floatButton}
+                    >
+                      {"Comanda"} <ArrowRightOutlined />
+                    </Button>
                   )}
                 </div>
               )}

@@ -75,3 +75,9 @@
   border-color: #fa8c16 !important;
   color: white !important;
 }
+
+.floatButton {
+  position: fixed;
+  bottom: 4rem;
+  right: 1rem;
+}

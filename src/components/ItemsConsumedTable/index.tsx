@@ -126,14 +126,12 @@ const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
   appointment,
   setAppointment,
 }) => {
-  const { Text, Link } = Typography;
+  const { Link } = Typography;
 
   const [dataSource, setDataSource] = useState<ItemConsumed[]>(
     appointment?.check.itemsConsumed || []
   );
   const [count, setCount] = useState(dataSource.length);
-
-  const isEditing = !!appointment?.id;
 
   useEffect(() => {
     setAppointment(
