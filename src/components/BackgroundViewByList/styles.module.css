@@ -32,9 +32,6 @@
   gap: 0.25rem;
   flex-wrap: wrap;
 }
-.schedulesContainer > button {
-  width: 90px;
-}
 
 .grayButton {
   background-color: #A9A9A9;
@@ -56,4 +53,8 @@
   background-color: #fa8c16 !important;
   border-color: #fa8c16 !important;
   color: white !important;
+}
+
+.timeShift {
+  width: 70px;
 }

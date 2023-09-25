@@ -106,7 +106,7 @@ const BackgroundViewByList = (props: Props) => {
                     <Text strong>{court.name}</Text>
                   </Divider>
                   <div className={styles.schedulesContainer}>
-                    <Hours
+                    <Schedules
                       courtId={court.id}
                       selectedSchedules={selectedSchedules}
                       setSelectedSchedules={setSelectedSchedules}
@@ -179,7 +179,7 @@ const BackgroundViewByList = (props: Props) => {
   );
 };
 
-type HoursProps = {
+type SchedulesProps = {
   courtId: number;
   selectedSchedules: Schedule[];
   setSelectedSchedules: React.Dispatch<React.SetStateAction<Schedule[]>>;
@@ -190,7 +190,8 @@ type HoursProps = {
     appointment: Appointment | undefined
   ) => void;
 };
-const Hours = (props: HoursProps) => {
+const Schedules = (props: SchedulesProps) => {
+  const { Text } = Typography;
   const {
     courtId,
     selectedSchedules,
@@ -223,66 +224,148 @@ const Hours = (props: HoursProps) => {
   return (
     <>
       {isLoading && <Spin />}
-      {!isLoading &&
-        getHours(8, 23).map((hour: string, index: number) => {
-          const hasSchedule =
-            schedules.find((s: Schedule) => s.time === hour) !== undefined;
-          const isSelected = selectedSchedules.find(
-            (s) => s.courtId === courtId && s.time === hour
-          );
-          const getClassName = () => {
-            if (hasSchedule) {
-              return styles.grayButton;
-            }
-            if (isSelected) {
-              return styles.orangeButton;
-            }
-            return "";
-          };
-          return (
-            <Button
-              key={`hour_${courtId}_${index}`}
-              type={"primary"}
-              className={getClassName()}
-              icon={
-                isSelected && !hasSchedule ? <CheckSquareOutlined /> : <span />
-              }
-              onClick={() => {
-                if (hasSchedule && selectedSchedules.length > 0) {
-                  return;
-                }
-                if (hasSchedule) {
-                  let schedule = schedules.find(
-                    (s: Schedule) => s.time === hour
-                  ) as Schedule;
-                  onNext(courtId, [schedule], schedule.appointment);
-                  return;
-                }
-                if (isSelected) {
-                  setSelectedSchedules((prevState) =>
-                    prevState.filter((s) => s.time !== hour)
-                  );
-                  return;
-                }
-
-                if (selectedSchedules.find((s) => s.courtId !== courtId)) {
-                  setSelectedSchedules([]);
-                }
-                setSelectedSchedules((prevState) => [
-                  ...prevState,
-                  {
-                    date: getUTCString(selectedDate) as string,
-                    time: hour,
-                    courtId: courtId,
-                  } as Schedule,
-                ]);
-              }}
-            >
-              {hour.substring(0, 5)}
-            </Button>
-          );
-        })}
+      {!isLoading && (
+        <>
+          <Space size={4}>
+            <div className={styles.timeShift}>
+              <Text>Manhã:</Text>
+            </div>
+            {getHours(8, 13).map((hour: string, index: number) => {
+              return (
+                <Hour
+                  key={`hour_${courtId}_${index}`}
+                  courtId={courtId}
+                  schedules={schedules}
+                  selectedSchedules={selectedSchedules}
+                  setSelectedSchedules={setSelectedSchedules}
+                  selectedDate={selectedDate}
+                  hour={hour}
+                  onNext={onNext}
+                />
+              );
+            })}
+          </Space>
+          <Space size={4}>
+            <div className={styles.timeShift}>
+              <Text>Tarde:</Text>
+            </div>
+            {getHours(13, 18).map((hour: string, index: number) => {
+              return (
+                <Hour
+                  key={`hour_${courtId}_${index}`}
+                  courtId={courtId}
+                  schedules={schedules}
+                  selectedSchedules={selectedSchedules}
+                  setSelectedSchedules={setSelectedSchedules}
+                  selectedDate={selectedDate}
+                  hour={hour}
+                  onNext={onNext}
+                />
+              );
+            })}
+          </Space>
+          <Space size={4}>
+            <div className={styles.timeShift}>
+              <Text>Noite:</Text>
+            </div>
+            {getHours(18, 23).map((hour: string, index: number) => {
+              return (
+                <Hour
+                  key={`hour_${courtId}_${index}`}
+                  courtId={courtId}
+                  schedules={schedules}
+                  selectedSchedules={selectedSchedules}
+                  setSelectedSchedules={setSelectedSchedules}
+                  selectedDate={selectedDate}
+                  hour={hour}
+                  onNext={onNext}
+                />
+              );
+            })}
+          </Space>
+        </>
+      )}
     </>
+  );
+};
+
+type HourProps = {
+  courtId: number;
+  schedules: Schedule[];
+  selectedSchedules: Schedule[];
+  setSelectedSchedules: React.Dispatch<React.SetStateAction<Schedule[]>>;
+  selectedDate: Date;
+  hour: string;
+  onNext: (
+    courtId: number,
+    schedules: Schedule[],
+    appointment: Appointment | undefined
+  ) => void;
+};
+const Hour = (props: HourProps) => {
+  const {
+    courtId,
+    schedules,
+    selectedSchedules,
+    setSelectedSchedules,
+    selectedDate,
+    onNext,
+    hour,
+  } = props;
+
+  const hasSchedule =
+    schedules.find((s: Schedule) => s.time === hour) !== undefined;
+  const isSelected = selectedSchedules.find(
+    (s) => s.courtId === courtId && s.time === hour
+  );
+  const getClassName = () => {
+    if (hasSchedule) {
+      return styles.grayButton;
+    }
+    if (isSelected) {
+      return styles.orangeButton;
+    }
+    return "";
+  };
+  return (
+    <Button
+      type={"primary"}
+      className={getClassName()}
+      style={{ width: "90px" }}
+      icon={isSelected && !hasSchedule ? <CheckSquareOutlined /> : <span />}
+      onClick={() => {
+        if (hasSchedule && selectedSchedules.length > 0) {
+          return;
+        }
+        if (hasSchedule) {
+          let schedule = schedules.find(
+            (s: Schedule) => s.time === hour
+          ) as Schedule;
+          onNext(courtId, [schedule], schedule.appointment);
+          return;
+        }
+        if (isSelected) {
+          setSelectedSchedules((prevState) =>
+            prevState.filter((s) => s.time !== hour)
+          );
+          return;
+        }
+
+        if (selectedSchedules.find((s) => s.courtId !== courtId)) {
+          setSelectedSchedules([]);
+        }
+        setSelectedSchedules((prevState) => [
+          ...prevState,
+          {
+            date: getUTCString(selectedDate) as string,
+            time: hour,
+            courtId: courtId,
+          } as Schedule,
+        ]);
+      }}
+    >
+      {hour.substring(0, 5)}
+    </Button>
   );
 };
 
