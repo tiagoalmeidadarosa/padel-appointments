@@ -43,22 +43,35 @@ type Props = {
   show: boolean;
   courtId: number;
   onCancel: () => void;
+  preSelectedDate?: Date | undefined;
+  preSelectedSchedules?: Schedule[] | undefined;
+  preSelectedAppointment?: Appointment | undefined;
 };
 export default function AppointmentModal(props: Props) {
-  const { onCancel, courtId, show } = props;
+  const {
+    onCancel,
+    courtId,
+    show,
+    preSelectedDate,
+    preSelectedSchedules,
+    preSelectedAppointment,
+  } = props;
+  const fromViewByList = !!preSelectedSchedules;
 
   const [api, contextHolder] = notification.useNotification();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [currentStep, setCurrentStep] = useState<ModalSteps>(ModalSteps.step1);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedSchedules, setSelectedSchedules] = useState<Schedule[]>([]);
-  const [selectedAppointment, setSelectedAppointment] = useState<Appointment>();
+  const [currentStep, setCurrentStep] = useState<ModalSteps>(
+    fromViewByList ? ModalSteps.step2 : ModalSteps.step1
+  );
+  const [selectedDate, setSelectedDate] = useState<Date>(preSelectedDate || new Date());
+  const [selectedSchedules, setSelectedSchedules] = useState<Schedule[]>(preSelectedSchedules || []);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | undefined>(preSelectedAppointment);
 
   useEffect(() => {
-    if (courtId && selectedDate) {
+    if (courtId && selectedDate && !fromViewByList) {
       setIsLoading(true);
       AppointmentService.getSchedules(
         courtId,
@@ -75,7 +88,7 @@ export default function AppointmentModal(props: Props) {
           setIsLoading(false);
         });
     }
-  }, [courtId, selectedDate]);
+  }, [courtId, selectedDate, fromViewByList]);
 
   const resetModal = () => {
     setSelectedDate(new Date());
@@ -305,7 +318,7 @@ export default function AppointmentModal(props: Props) {
               key="next"
               type="primary"
               onClick={() => {
-                setSelectedAppointment({} as Appointment);
+                setSelectedAppointment(undefined);
                 setCurrentStep(ModalSteps.step2);
               }}
               disabled={selectedSchedules.length === 0}
@@ -338,10 +351,15 @@ export default function AppointmentModal(props: Props) {
                   if (isEditing) {
                     setSelectedSchedules([]);
                   }
-                  setCurrentStep(ModalSteps.step1);
+                  if (fromViewByList) {
+                    resetModal();
+                  }
+                  else {
+                    setCurrentStep(ModalSteps.step1);
+                  }
                 }}
               >
-                Voltar
+                {fromViewByList ? 'Fechar' : 'Voltar'}
               </Button>
               <Button
                 key="submit"

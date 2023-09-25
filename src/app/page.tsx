@@ -2,9 +2,9 @@
 import { Rubik } from "@next/font/google";
 import styles from "./page.module.css";
 import { useState } from "react";
-import AppointmentModal from "@/components/AppointmentDrawer";
 import { ConfigProvider } from "antd";
 import dynamic from "next/dynamic";
+import { BackgroundType } from "@/shared";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -12,17 +12,35 @@ const rubik = Rubik({
 });
 
 export default function Home() {
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedCourtId, setSelectedCourtId] = useState<number>();
+  var backgroundView = BackgroundType.image.toString();
+  if (typeof window !== "undefined") {
+    backgroundView = localStorage.getItem("backgroundView") || backgroundView;
+  }
 
-  const handleSelectedCourt = (courtId: number) => {
-    setSelectedCourtId(courtId);
-    setOpenModal(true);
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>(
+    backgroundView === BackgroundType.image.toString()
+      ? BackgroundType.image
+      : BackgroundType.list
+  );
+
+  const BackgroundViewPerImage = dynamic(
+    () => import("@/components/BackgroundViewPerImage"),
+    {
+      ssr: false,
+    }
+  );
+
+  const BackgroundViewByList = dynamic(
+    () => import("@/components/BackgroundViewByList"),
+    {
+      ssr: false,
+    }
+  );
+
+  const handleChangeBackgroundType = (backgroundType: BackgroundType) => {
+    localStorage.setItem("backgroundView", backgroundType.toString());
+    setBackgroundType(backgroundType);
   };
-
-  const Background = dynamic(() => import("@/components/Background"), {
-    ssr: false,
-  });
 
   return (
     <ConfigProvider
@@ -33,16 +51,16 @@ export default function Home() {
       }}
     >
       <main className={styles.main}>
-        <Background onClick={handleSelectedCourt} />
-
-        {openModal && selectedCourtId && (
-          <AppointmentModal
-            show={openModal}
-            courtId={selectedCourtId}
-            onCancel={() => {
-              setSelectedCourtId(undefined);
-              setOpenModal(false);
-            }}
+        {backgroundType === BackgroundType.image && (
+          <BackgroundViewPerImage
+            backgroundType={backgroundType}
+            onChangeBackgroundType={handleChangeBackgroundType}
+          />
+        )}
+        {backgroundType === BackgroundType.list && (
+          <BackgroundViewByList
+            backgroundType={backgroundType}
+            onChangeBackgroundType={handleChangeBackgroundType}
           />
         )}
       </main>

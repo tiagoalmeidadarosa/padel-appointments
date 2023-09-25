@@ -1,0 +1,59 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem 0rem 1rem;
+}
+
+.body {
+  flex: 1;
+  overflow: auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0rem 1rem 1rem 1rem;
+}
+
+.schedulesContainer {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.schedulesContainer > button {
+  width: 90px;
+}
+
+.grayButton {
+  background-color: #A9A9A9;
+  border-color: #A9A9A9;
+  color: white;
+}
+.grayButton:hover:not([disabled]) {
+  background-color: #A9A9A9 !important;
+  border-color: lightgray !important;
+  color: whitesmoke !important;
+}
+
+.orangeButton {
+  background-color: #fa8c16;
+  border-color: #fa8c16;
+  color: white;
+}
+.orangeButton:hover:not([disabled]) {
+  background-color: #fa8c16 !important;
+  border-color: #fa8c16 !important;
+  color: white !important;
+}
