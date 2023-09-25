@@ -41,9 +41,9 @@ export default function LoginForm({ error }: Props) {
         >
           <Form.Item>
             <Image
-              src="/logo.svg"
-              width={50}
-              height={50}
+              src="/login-logo.svg"
+              width={200}
+              height={40}
               alt="Picture of the author"
             />
           </Form.Item>
