@@ -58,7 +58,7 @@ export default function LoginForm({ error }: Props) {
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Username"
+              placeholder="Nome de usuário"
             />
           </Form.Item>
           <Form.Item
@@ -68,7 +68,7 @@ export default function LoginForm({ error }: Props) {
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
               type="password"
-              placeholder="Password"
+              placeholder="Senha"
             />
           </Form.Item>
 
@@ -79,7 +79,7 @@ export default function LoginForm({ error }: Props) {
               className={styles.loginFormButton}
               loading={isLoading}
             >
-              Log in
+              Entrar
             </Button>
           </Form.Item>
           {errorMessage && <div className={styles.error}>{errorMessage}</div>}
