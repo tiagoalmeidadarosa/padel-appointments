@@ -102,6 +102,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
           onPressEnter={save}
           onBlur={save}
           onKeyDown={handleEsc}
+          style={{ minWidth: "5rem" }}
         />
       </Form.Item>
     ) : (
