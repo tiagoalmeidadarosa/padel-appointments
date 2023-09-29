@@ -187,7 +187,7 @@ const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
     const newData: ItemConsumed = {
       id: count,
       quantity: 1,
-      description: "Produto xxx",
+      description: "-",
       price: 0,
       paid: false,
     };
