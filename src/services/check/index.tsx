@@ -1,7 +1,7 @@
 import { httpClient } from "@/httpClient";
 import {
   CheckRequest
-} from "./interfaces";
+} from "@/shared/interfaces";
 
 export class CheckService {
   static updateCheck(

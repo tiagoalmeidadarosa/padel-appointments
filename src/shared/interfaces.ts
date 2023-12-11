@@ -19,3 +19,14 @@ export interface CheckRequest {
   pricePaidFor: number;
   itemsConsumed: ItemConsumed[];
 }
+
+export interface Court {
+  id: number;
+  name: string;
+}
+
+export interface Product {
+  id: number;
+  name: string;
+}
+

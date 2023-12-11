@@ -37,7 +37,7 @@ import "moment/locale/pt-br";
 import ItemsConsumedTable from "../ItemsConsumedTable";
 import Total from "../Total";
 import { CheckService } from "@/services/check";
-import { CheckRequest } from "@/services/check/interfaces";
+import { CheckRequest } from "@/shared/interfaces";
 
 type Props = {
   show: boolean;

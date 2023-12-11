@@ -1,4 +1,4 @@
-import { Check } from "../check/interfaces";
+import { Check } from "@/shared/interfaces";
 
 export interface Appointment {
   id: number;

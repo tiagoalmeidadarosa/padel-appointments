@@ -23,7 +23,7 @@ import { Appointment, Schedule } from "@/services/appointment/interfaces";
 import { addDays, getHours, getUTCString } from "@/utils/date";
 import { CourtService } from "@/services/court";
 import { AxiosResponse } from "axios";
-import { Court } from "@/services/court/interfaces";
+import { Court } from "@/shared/interfaces";
 import { CheckSquareOutlined } from "@ant-design/icons";
 import { AppointmentService } from "@/services/appointment";
 import AppointmentModal from "../AppointmentDrawer";

@@ -1,5 +1,5 @@
 import { httpClient } from "@/httpClient";
-import { Court } from "./interfaces";
+import { Court } from "@/shared/interfaces";;
 
 export class CourtService {
   static getCourts() {
