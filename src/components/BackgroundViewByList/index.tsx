@@ -147,7 +147,6 @@ const BackgroundViewByList = (props: Props) => {
             <FloatButton
               shape="square"
               type="primary"
-              description="Reservar"
               icon={<DoubleRightOutlined />}
               onClick={() =>
                 handleNext(
@@ -156,7 +155,6 @@ const BackgroundViewByList = (props: Props) => {
                   undefined
                 )
               }
-              style={{ width: "5rem" }}
             />
           </ConfigProvider>
         )}
