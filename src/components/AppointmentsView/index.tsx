@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import dynamic from "next/dynamic";
 import { BackgroundType } from "@/shared";
+import BackgroundViewByList from "../BackgroundViewByList";
+import BackgroundViewPerImage from "../BackgroundViewPerImage";
 
 export default function AppointmentsView() {
   var backgroundView = BackgroundType.image.toString();
@@ -13,20 +14,6 @@ export default function AppointmentsView() {
     backgroundView === BackgroundType.image.toString()
       ? BackgroundType.image
       : BackgroundType.list
-  );
-
-  const BackgroundViewPerImage = dynamic(
-    () => import("@/components/BackgroundViewPerImage"),
-    {
-      ssr: false,
-    }
-  );
-
-  const BackgroundViewByList = dynamic(
-    () => import("@/components/BackgroundViewByList"),
-    {
-      ssr: false,
-    }
   );
 
   const handleChangeBackgroundType = (backgroundType: BackgroundType) => {
