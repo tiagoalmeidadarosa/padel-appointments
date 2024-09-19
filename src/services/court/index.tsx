@@ -3,6 +3,6 @@ import { Court } from "@/shared/interfaces";;
 
 export class CourtService {
   static getCourts() {
-    return httpClient.get<Court[]>(`/courts`);
+    return httpClient.get<Court[]>(`/api/courts`);
   }
 }

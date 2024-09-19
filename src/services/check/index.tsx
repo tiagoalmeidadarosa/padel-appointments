@@ -8,6 +8,6 @@ export class CheckService {
     checkId: number,
     checkRequest: CheckRequest
   ) {
-    return httpClient.put(`/checks/${checkId}`, checkRequest);
+    return httpClient.put(`/api/checks/${checkId}`, checkRequest);
   }
 }

@@ -8,19 +8,19 @@ import {
 export class AppointmentService {
   static getSchedules(courtId: number, date: string) {
     return httpClient.get<Schedule[]>(
-      `/courts/${courtId}/schedules?date=${date}`
+      `/api/courts/${courtId}/schedules?date=${date}`
     );
   }
 
   static addAppointment(appointmentRequest: AppointmentRequest) {
-    return httpClient.post(`/appointments`, appointmentRequest);
+    return httpClient.post(`/api/appointments`, appointmentRequest);
   }
 
   static updateAppointment(
     appointmentId: number,
     updateRequest: UpdateAppointmentRequest
   ) {
-    return httpClient.put(`/appointments/${appointmentId}`, updateRequest);
+    return httpClient.put(`/api/appointments/${appointmentId}`, updateRequest);
   }
 
   static deleteAppointment(
@@ -29,7 +29,7 @@ export class AppointmentService {
     removeRecurrence: boolean
   ) {
     return httpClient.delete(
-      `/appointments/${appointmentId}/schedules/${scheduleId}?removeRecurrence=${removeRecurrence}`
+      `/api/appointments/${appointmentId}/schedules/${scheduleId}?removeRecurrence=${removeRecurrence}`
     );
   }
 }
