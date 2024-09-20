@@ -2,39 +2,41 @@
 import Image from "next/image";
 import styles from "./styles.module.css";
 import { useState } from "react";
-import { Layout, Menu, MenuProps } from "antd";
+import { Layout, Menu, MenuProps, Typography } from "antd";
 import { ScheduleOutlined, AppstoreAddOutlined } from "@ant-design/icons";
 import AppointmentsView from "../AppointmentsView";
 import ProductsView from "../ProductsView";
+import React from "react";
 
 export default function SideMenu() {
-  const { Content, Sider } = Layout;
-  type MenuItem = Required<MenuProps>["items"][number];
+  const { Header, Content, Sider } = Layout;
+  const { Title } = Typography;
 
-  const [collapsed, setCollapsed] = useState(true);
-  const [selectedKey, setSelectedKey] = useState<string>("1");
-
-  const getItem = (
-    label: React.ReactNode,
-    key: React.Key,
-    icon?: React.ReactNode,
-    children?: MenuItem[]
-  ): MenuItem => {
-    return {
-      key,
-      icon,
-      children,
-      label,
-    } as MenuItem;
+  type MenuItem = Required<MenuProps>["items"][number] & {
+    label: string;
+    content: React.ReactNode;
   };
 
-  const items: MenuItem[] = [
-    getItem("Agendamentos", "1", <ScheduleOutlined />),
-    getItem("Produtos", "2", <AppstoreAddOutlined />),
+  const menuItems: MenuItem[] = [
+    {
+      key: "1",
+      icon: React.createElement(ScheduleOutlined),
+      label: "Agendamentos",
+      content: React.createElement(AppointmentsView),
+    },
+    {
+      key: "2",
+      icon: React.createElement(AppstoreAddOutlined),
+      label: "Produtos",
+      content: React.createElement(ProductsView),
+    },
   ];
 
+  const [collapsed, setCollapsed] = useState(true);
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem>(menuItems[0]);
+
   const handleMenuClick = ({ key }: any) => {
-    setSelectedKey(key);
+    setSelectedMenuItem(menuItems.find((item) => item.key === key) || menuItems[0]);
   };
 
   return (
@@ -65,16 +67,18 @@ export default function SideMenu() {
         <Menu
           theme="dark"
           mode="inline"
-          items={items}
+          items={menuItems}
           defaultSelectedKeys={["1"]}
           onClick={handleMenuClick}
         />
       </Sider>
       <Layout>
-        <Content style={{ margin: "0 16px" }}>
-          {selectedKey === "1" && <AppointmentsView />}
-          {selectedKey === "2" && <ProductsView />}
-        </Content>
+        <Header>
+          <Title level={5} style={{ color: "white" }}>
+            {selectedMenuItem.label}
+          </Title>
+        </Header>
+        <Content style={{ margin: "0 16px" }}>{selectedMenuItem.content}</Content>
       </Layout>
     </Layout>
   );
