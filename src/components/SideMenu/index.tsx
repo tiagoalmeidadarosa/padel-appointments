@@ -14,7 +14,7 @@ import ProductsView from "../ProductsView";
 import React from "react";
 
 export default function SideMenu() {
-  const { Header, Content, Sider } = Layout;
+  const { Header, Content, Sider, Footer } = Layout;
   const { Title } = Typography;
 
   type MenuItem = Required<MenuProps>["items"][number] & {
@@ -94,6 +94,7 @@ export default function SideMenu() {
         <Content style={{ margin: "0 16px" }}>
           {selectedMenuItem.content}
         </Content>
+        <Footer style={{ textAlign: "center" }}/>
       </Layout>
     </Layout>
   );

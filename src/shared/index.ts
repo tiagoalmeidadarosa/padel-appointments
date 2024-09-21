@@ -3,8 +3,3 @@ export enum ModalSteps {
   step2,
   step3,
 }
-
-export enum BackgroundType {
-  image,
-  list,
-}

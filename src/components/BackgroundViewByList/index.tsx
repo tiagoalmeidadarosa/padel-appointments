@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
-import { BackgroundType } from "../../shared";
 import {
   Button,
   ConfigProvider,
@@ -8,7 +7,6 @@ import {
   FloatButton,
   Space,
   Spin,
-  Switch,
   Typography,
 } from "antd";
 import {
@@ -26,13 +24,8 @@ import { CheckSquareOutlined } from "@ant-design/icons";
 import { AppointmentService } from "@/services/appointment";
 import AppointmentModal from "../AppointmentDrawer";
 
-type Props = {
-  backgroundType: BackgroundType;
-  onChangeBackgroundType: (backgroundType: BackgroundType) => void;
-};
-const BackgroundViewByList = (props: Props) => {
+const BackgroundViewByList = () => {
   const { Text } = Typography;
-  const { backgroundType, onChangeBackgroundType } = props;
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedCourtId, setSelectedCourtId] = useState<number>();
@@ -116,17 +109,6 @@ const BackgroundViewByList = (props: Props) => {
               ))}
             </>
           )}
-        </div>
-        <div className={styles.footer}>
-          <Space>
-            <Text>Visualização por lista</Text>
-            <Switch
-              size="small"
-              checked={backgroundType === BackgroundType.list}
-              onChange={() => onChangeBackgroundType(BackgroundType.image)}
-            />
-          </Space>
-          
         </div>
         {selectedSchedules.length > 0 && (
           <ConfigProvider

@@ -18,13 +18,6 @@
   text-align: center;
 }
 
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0rem 1rem 1rem 1rem;
-}
-
 .schedulesContainer {
   display: flex;
   gap: 0.25rem;
