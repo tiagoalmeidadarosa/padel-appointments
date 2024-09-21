@@ -2,8 +2,13 @@
 import Image from "next/image";
 import styles from "./styles.module.css";
 import { useState } from "react";
-import { Layout, Menu, MenuProps, Typography } from "antd";
-import { ScheduleOutlined, AppstoreAddOutlined } from "@ant-design/icons";
+import { Button, Layout, Menu, MenuProps, Typography } from "antd";
+import {
+  ScheduleOutlined,
+  AppstoreAddOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
+import { signOut } from "next-auth/react";
 import AppointmentsView from "../AppointmentsView";
 import ProductsView from "../ProductsView";
 import React from "react";
@@ -33,10 +38,14 @@ export default function SideMenu() {
   ];
 
   const [collapsed, setCollapsed] = useState(true);
-  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem>(menuItems[0]);
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem>(
+    menuItems[0]
+  );
 
   const handleMenuClick = ({ key }: any) => {
-    setSelectedMenuItem(menuItems.find((item) => item.key === key) || menuItems[0]);
+    setSelectedMenuItem(
+      menuItems.find((item) => item.key === key) || menuItems[0]
+    );
   };
 
   return (
@@ -73,12 +82,18 @@ export default function SideMenu() {
         />
       </Sider>
       <Layout>
-        <Header>
-          <Title level={5} style={{ color: "white" }}>
+        <Header className={styles.header}>
+          <Title level={5}>
             {selectedMenuItem.label}
           </Title>
+          <Button
+            icon={<LogoutOutlined />}
+            onClick={() => signOut()}
+          />
         </Header>
-        <Content style={{ margin: "0 16px" }}>{selectedMenuItem.content}</Content>
+        <Content style={{ margin: "0 16px" }}>
+          {selectedMenuItem.content}
+        </Content>
       </Layout>
     </Layout>
   );

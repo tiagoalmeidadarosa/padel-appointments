@@ -11,9 +11,7 @@ import {
   Switch,
   Typography,
 } from "antd";
-import { signOut } from "next-auth/react";
 import {
-  LogoutOutlined,
   LeftOutlined,
   RightOutlined,
   DoubleRightOutlined,
@@ -128,13 +126,7 @@ const BackgroundViewByList = (props: Props) => {
               onChange={() => onChangeBackgroundType(BackgroundType.image)}
             />
           </Space>
-          <Button
-            icon={<LogoutOutlined />}
-            type="text"
-            onClick={() => signOut()}
-          >
-            Logout
-          </Button>
+          
         </div>
         {selectedSchedules.length > 0 && (
           <ConfigProvider
