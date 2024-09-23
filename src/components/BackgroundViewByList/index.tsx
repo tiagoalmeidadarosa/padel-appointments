@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
-import {
-  Button,
-  ConfigProvider,
-  Divider,
-  FloatButton,
-  Space,
-  Spin,
-  Typography,
-} from "antd";
+import { Button, Divider, Empty, Space, Spin, Typography } from "antd";
 import {
   LeftOutlined,
   RightOutlined,
   DoubleRightOutlined,
+  PlusOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
 import { Appointment, Schedule } from "@/services/appointment/interfaces";
@@ -88,13 +82,42 @@ const BackgroundViewByList = () => {
           />
         </div>
         <div className={styles.body}>
+          <div className={styles.actions}>
+            <Button type="link" icon={<PlusOutlined />}>
+              Nova agenda
+            </Button>
+            <Button
+              type="primary"
+              className={styles.orangeButton}
+              disabled={!selectedSchedules.length}
+              icon={<DoubleRightOutlined />}
+              onClick={() =>
+                handleNext(
+                  selectedSchedules[0].courtId,
+                  selectedSchedules,
+                  undefined
+                )
+              }
+            >
+              Criar agendamento
+            </Button>
+          </div>
           {isLoading && <Spin style={{ marginTop: "1rem" }} />}
-          {!isLoading && (
+          {!isLoading && courts.length === 0 && (
+            <Empty
+              description="Nenhuma agenda"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          )}
+          {!isLoading && courts.length > 0 && (
             <>
               {courts.map((court) => (
                 <>
                   <Divider orientation="left">
-                    <Text strong>{court.name}</Text>
+                    <Space>
+                      <Text strong>{court.name}</Text>
+                      <Button type="link" icon={<EditOutlined />} />
+                    </Space>
                   </Divider>
                   <div className={styles.schedulesContainer}>
                     <Schedules
@@ -110,28 +133,6 @@ const BackgroundViewByList = () => {
             </>
           )}
         </div>
-        {selectedSchedules.length > 0 && (
-          <ConfigProvider
-            theme={{
-              token: {
-                colorPrimary: "#fa8c16",
-              },
-            }}
-          >
-            <FloatButton
-              shape="square"
-              type="primary"
-              icon={<DoubleRightOutlined />}
-              onClick={() =>
-                handleNext(
-                  selectedSchedules[0].courtId,
-                  selectedSchedules,
-                  undefined
-                )
-              }
-            />
-          </ConfigProvider>
-        )}
       </div>
       {openModal && selectedCourtId && (
         <AppointmentModal

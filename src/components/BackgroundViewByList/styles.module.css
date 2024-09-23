@@ -49,3 +49,9 @@
 .timeShift {
   width: 70px;
 }
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
