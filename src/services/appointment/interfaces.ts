@@ -8,13 +8,13 @@ export interface Appointment {
   price: number;
   hasRecurrence: boolean;
   check: Check;
+  agendaId: number;
 }
 
 export interface Schedule {
   id: number;
   date: string;
   time: string;
-  courtId: number;
   appointment: Appointment;
 }
 

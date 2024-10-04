@@ -20,9 +20,12 @@ export interface CheckRequest {
   itemsConsumed: ItemConsumed[];
 }
 
-export interface Court {
+export interface Agenda {
   id: number;
   name: string;
+  startsAt: string;
+  endsAt: string;
+  interval: string;
 }
 
 export interface Product {

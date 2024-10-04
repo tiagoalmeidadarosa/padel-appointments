@@ -6,9 +6,9 @@ import {
 } from "./interfaces";
 
 export class AppointmentService {
-  static getSchedules(courtId: number, date: string) {
+  static getSchedules(agendaId: number, date: string) {
     return httpClient.get<Schedule[]>(
-      `/api/courts/${courtId}/schedules?date=${date}`
+      `/api/agendas/${agendaId}/schedules?date=${date}`
     );
   }
 

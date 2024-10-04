@@ -6,8 +6,8 @@ import { sumValuesFromArrayOfObjects } from "@/utils/array";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 
 type TotalProps = {
-  appointment: Appointment | undefined;
-  setAppointment: React.Dispatch<React.SetStateAction<Appointment | undefined>>;
+  appointment: Appointment | null;
+  setAppointment: React.Dispatch<React.SetStateAction<Appointment | null>>;
 };
 const Total: React.FC<TotalProps> = ({ appointment, setAppointment }) => {
   const { Text } = Typography;

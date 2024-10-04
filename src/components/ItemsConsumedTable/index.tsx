@@ -120,8 +120,8 @@ type EditableTableProps = Parameters<typeof Table>[0];
 type ColumnTypes = Exclude<EditableTableProps["columns"], undefined>;
 
 type ItemsConsumedProps = {
-  appointment: Appointment | undefined;
-  setAppointment: React.Dispatch<React.SetStateAction<Appointment | undefined>>;
+  appointment: Appointment | null;
+  setAppointment: React.Dispatch<React.SetStateAction<Appointment | null>>;
 };
 const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
   appointment,

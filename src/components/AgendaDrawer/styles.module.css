@@ -1,27 +1,57 @@
-.container {
+.content {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  align-items: center;
+  padding: 0rem 1rem;
 }
 
-.title {
+.content > button {
+  width: 90px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.alignCenter {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.end {
+  display: flex;
+  justify-content: end;
+}
+
+.gap {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.space {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1rem 0rem 1rem;
 }
 
-.body {
-  flex: 1;
-  overflow: auto;
-  padding: 0 1rem;
-  text-align: center;
-}
-
-.schedulesContainer {
+.centralizedItems {
   display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
+  align-items: center;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .grayButton {
@@ -46,12 +76,8 @@
   color: white !important;
 }
 
-.timeShift {
-  width: 70px;
-}
-
-.actions {
-  display: flex;
-  justify-content: end;
-  gap: 0.5rem;
+.floatButton {
+  position: fixed;
+  bottom: 4rem;
+  right: 1rem;
 }

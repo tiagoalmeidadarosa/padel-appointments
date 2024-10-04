@@ -41,16 +41,16 @@ import { CheckRequest } from "@/shared/interfaces";
 
 type Props = {
   show: boolean;
-  courtId: number;
+  agendaId: number;
   onCancel: () => void;
   preSelectedDate?: Date | undefined;
   preSelectedSchedules?: Schedule[] | undefined;
-  preSelectedAppointment?: Appointment | undefined;
+  preSelectedAppointment: Appointment | null;
 };
-export default function AppointmentModal(props: Props) {
+export default function AppointmentDrawer(props: Props) {
   const {
     onCancel,
-    courtId,
+    agendaId,
     show,
     preSelectedDate,
     preSelectedSchedules,
@@ -66,15 +66,20 @@ export default function AppointmentModal(props: Props) {
   const [currentStep, setCurrentStep] = useState<ModalSteps>(
     fromViewByList ? ModalSteps.step2 : ModalSteps.step1
   );
-  const [selectedDate, setSelectedDate] = useState<Date>(preSelectedDate || new Date());
-  const [selectedSchedules, setSelectedSchedules] = useState<Schedule[]>(preSelectedSchedules || []);
-  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | undefined>(preSelectedAppointment);
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    preSelectedDate || new Date()
+  );
+  const [selectedSchedules, setSelectedSchedules] = useState<Schedule[]>(
+    preSelectedSchedules || []
+  );
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(preSelectedAppointment);
 
   useEffect(() => {
-    if (courtId && selectedDate && !fromViewByList) {
+    if (agendaId && selectedDate && !fromViewByList) {
       setIsLoading(true);
       AppointmentService.getSchedules(
-        courtId,
+        agendaId,
         getUTCString(selectedDate) as string
       )
         .then((response: AxiosResponse<Schedule[]>) => {
@@ -88,7 +93,7 @@ export default function AppointmentModal(props: Props) {
           setIsLoading(false);
         });
     }
-  }, [courtId, selectedDate, fromViewByList]);
+  }, [agendaId, selectedDate, fromViewByList]);
 
   const resetModal = () => {
     setSelectedDate(new Date());
@@ -116,7 +121,7 @@ export default function AppointmentModal(props: Props) {
               onClick={() => handleChangeDate(-1)}
               disabled={new Date().getDate() === selectedDate.getDate()}
             />
-            <Text>{`Quadra ${courtId} - ${
+            <Text>{`Quadra ${agendaId} - ${
               moment(selectedDate).format("llll").split(" às")[0]
             }`}</Text>
             <Button
@@ -128,7 +133,7 @@ export default function AppointmentModal(props: Props) {
         )}
         {currentStep === ModalSteps.step2 && (
           <div className={styles.center}>
-            <Text>{`Quadra ${courtId} - ${
+            <Text>{`Quadra ${agendaId} - ${
               moment(selectedDate).format("llll").split(" às")[0]
             } ${selectedSchedules
               .flatMap((s) => s.time.substring(0, s.time.lastIndexOf(":")))
@@ -318,7 +323,7 @@ export default function AppointmentModal(props: Props) {
               key="next"
               type="primary"
               onClick={() => {
-                setSelectedAppointment(undefined);
+                setSelectedAppointment(null);
                 setCurrentStep(ModalSteps.step2);
               }}
               disabled={selectedSchedules.length === 0}
@@ -353,13 +358,12 @@ export default function AppointmentModal(props: Props) {
                   }
                   if (fromViewByList) {
                     resetModal();
-                  }
-                  else {
+                  } else {
                     setCurrentStep(ModalSteps.step1);
                   }
                 }}
               >
-                {fromViewByList ? 'Fechar' : 'Voltar'}
+                {fromViewByList ? "Fechar" : "Voltar"}
               </Button>
               <Button
                 key="submit"
@@ -397,10 +401,8 @@ export default function AppointmentModal(props: Props) {
   };
 
   const CustomContent = (
-    appointment: Appointment | undefined,
-    setAppointment: React.Dispatch<
-      React.SetStateAction<Appointment | undefined>
-    >
+    appointment: Appointment | null,
+    setAppointment: React.Dispatch<React.SetStateAction<Appointment | null>>
   ) => {
     const { Text } = Typography;
 
@@ -473,7 +475,9 @@ export default function AppointmentModal(props: Props) {
                                 {
                                   date: getUTCString(selectedDate) as string,
                                   time: hour,
-                                  courtId: courtId,
+                                  appointment: {
+                                    agendaId,
+                                  } as Appointment,
                                 } as Schedule,
                               ]);
                             }
