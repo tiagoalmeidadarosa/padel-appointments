@@ -23,6 +23,12 @@ export default function Home() {
         token: {
           fontFamily: rubik.style.fontFamily,
         },
+        components: {
+          Button: {
+            colorPrimary: '#134B8D',
+            colorPrimaryHover: '#0A3A6F',
+          },
+        },
       }}
     >
       <main className={styles.main}>
