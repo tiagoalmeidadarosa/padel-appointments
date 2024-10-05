@@ -28,6 +28,13 @@ export interface Agenda {
   interval: string;
 }
 
+export interface AgendaRequest {
+  name: string;
+  startsAt: string;
+  endsAt: string;
+  interval: string;
+}
+
 export interface Schedule {
   id: number;
   date: string;

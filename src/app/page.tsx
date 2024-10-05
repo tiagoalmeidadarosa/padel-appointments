@@ -9,12 +9,9 @@ const rubik = Rubik({
   weight: ["400"],
 });
 
-const SideMenu = dynamic(
-  () => import("@/components/SideMenu"),
-  {
-    ssr: false,
-  }
-);
+const SideMenu = dynamic(() => import("@/components/SideMenu"), {
+  ssr: false,
+});
 
 export default function Home() {
   return (
@@ -25,8 +22,14 @@ export default function Home() {
         },
         components: {
           Button: {
-            colorPrimary: '#134B8D',
-            colorPrimaryHover: '#0A3A6F',
+            colorPrimary: "#134B8D",
+            colorPrimaryHover: "#0A3A6F",
+          },
+          Input: {
+            fontFamily: rubik.style.fontFamily,
+          },
+          DatePicker: {
+            fontFamily: rubik.style.fontFamily,
           },
         },
       }}
