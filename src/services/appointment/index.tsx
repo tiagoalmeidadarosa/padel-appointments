@@ -1,17 +1,7 @@
 import { httpClient } from "@/httpClient";
-import {
-  AppointmentRequest,
-  Schedule,
-  UpdateAppointmentRequest,
-} from "./interfaces";
+import { AppointmentRequest, UpdateAppointmentRequest } from "@/shared/interfaces";
 
 export class AppointmentService {
-  static getSchedules(agendaId: number, date: string) {
-    return httpClient.get<Schedule[]>(
-      `/api/agendas/${agendaId}/schedules?date=${date}`
-    );
-  }
-
   static addAppointment(appointmentRequest: AppointmentRequest) {
     return httpClient.post(`/api/appointments`, appointmentRequest);
   }

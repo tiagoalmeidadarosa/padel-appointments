@@ -28,8 +28,39 @@ export interface Agenda {
   interval: string;
 }
 
+export interface Schedule {
+  id: number;
+  date: string;
+  time: string;
+  appointment: Appointment;
+}
+
 export interface Product {
   id: number;
   name: string;
 }
 
+export interface Appointment {
+  id: number;
+  date: string;
+  customerName: string;
+  customerPhoneNumber: string;
+  price: number;
+  hasRecurrence: boolean;
+  check: Check;
+  agendaId: number;
+}
+
+export interface AppointmentRequest {
+  date: string;
+  customerName: string;
+  customerPhoneNumber: string;
+  price: number;
+  schedules: Schedule[];
+}
+
+export interface UpdateAppointmentRequest {
+  customerName: string;
+  customerPhoneNumber: string;
+  price: number;
+}

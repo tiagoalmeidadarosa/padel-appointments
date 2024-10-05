@@ -14,13 +14,8 @@ import {
   Space,
 } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
+import { AgendaService } from "@/services/agenda";
 import { AppointmentService } from "@/services/appointment";
-import {
-  Appointment,
-  Schedule,
-  AppointmentRequest,
-  UpdateAppointmentRequest,
-} from "@/services/appointment/interfaces";
 import { getHours, getUTCString } from "@/utils/date";
 import { phoneMask } from "@/utils/string";
 import { AxiosResponse } from "axios";
@@ -37,7 +32,13 @@ import "moment/locale/pt-br";
 import ItemsConsumedTable from "../ItemsConsumedTable";
 import Total from "../Total";
 import { CheckService } from "@/services/check";
-import { CheckRequest } from "@/shared/interfaces";
+import {
+  Appointment,
+  Schedule,
+  AppointmentRequest,
+  UpdateAppointmentRequest,
+  CheckRequest,
+} from "@/shared/interfaces";
 
 type Props = {
   show: boolean;
@@ -78,10 +79,7 @@ export default function AppointmentDrawer(props: Props) {
   useEffect(() => {
     if (agendaId && selectedDate && !fromViewByList) {
       setIsLoading(true);
-      AppointmentService.getSchedules(
-        agendaId,
-        getUTCString(selectedDate) as string
-      )
+      AgendaService.getSchedules(agendaId, getUTCString(selectedDate) as string)
         .then((response: AxiosResponse<Schedule[]>) => {
           setSchedules(response.data);
         })

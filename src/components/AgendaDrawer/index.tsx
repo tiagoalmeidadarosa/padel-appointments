@@ -16,12 +16,6 @@ import {
 } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { AppointmentService } from "@/services/appointment";
-import {
-  Appointment,
-  Schedule,
-  AppointmentRequest,
-  UpdateAppointmentRequest,
-} from "@/services/appointment/interfaces";
 import { getHours, getUTCString } from "@/utils/date";
 import { phoneMask } from "@/utils/string";
 import { AxiosResponse } from "axios";
@@ -38,7 +32,14 @@ import "moment/locale/pt-br";
 import ItemsConsumedTable from "../ItemsConsumedTable";
 import Total from "../Total";
 import { CheckService } from "@/services/check";
-import { Agenda, CheckRequest } from "@/shared/interfaces";
+import {
+  Agenda,
+  CheckRequest,
+  Appointment,
+  Schedule,
+  AppointmentRequest,
+  UpdateAppointmentRequest,
+} from "@/shared/interfaces";
 
 type Props = {
   show: boolean;

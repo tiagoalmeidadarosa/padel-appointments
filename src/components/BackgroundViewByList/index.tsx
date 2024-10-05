@@ -9,13 +9,11 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
-import { Appointment, Schedule } from "@/services/appointment/interfaces";
 import { addDays, getHours, getUTCString } from "@/utils/date";
 import { AgendaService } from "@/services/agenda";
 import { AxiosResponse } from "axios";
-import { Agenda } from "@/shared/interfaces";
+import { Appointment, Schedule, Agenda } from "@/shared/interfaces";
 import { CheckSquareOutlined } from "@ant-design/icons";
-import { AppointmentService } from "@/services/appointment";
 import AppointmentDrawer from "../AppointmentDrawer";
 import AgendaDrawer from "../AgendaDrawer";
 
@@ -201,10 +199,7 @@ const Schedules = (props: SchedulesProps) => {
 
   useEffect(() => {
     setIsLoading(true);
-    AppointmentService.getSchedules(
-      agendaId,
-      getUTCString(selectedDate) as string
-    )
+    AgendaService.getSchedules(agendaId, getUTCString(selectedDate) as string)
       .then((response: AxiosResponse<Schedule[]>) => {
         setSchedules(response.data);
       })
@@ -347,7 +342,9 @@ const Hour = (props: HourProps) => {
           return;
         }
 
-        if (selectedSchedules.find((s) => s.appointment.agendaId !== agendaId)) {
+        if (
+          selectedSchedules.find((s) => s.appointment.agendaId !== agendaId)
+        ) {
           setSelectedSchedules([]);
         }
         setSelectedSchedules((prevState) => [
