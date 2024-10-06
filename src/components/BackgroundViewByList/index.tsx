@@ -128,7 +128,11 @@ const BackgroundViewByList = () => {
                   <Divider orientation="left">
                     <Space>
                       <Text strong>{agenda.name}</Text>
-                      <Button type="link" icon={<EditOutlined />} />
+                      <Button
+                        type="link"
+                        icon={<EditOutlined />}
+                        onClick={() => handleNextAgenda(agenda)}
+                      />
                     </Space>
                   </Divider>
                   <div className={styles.schedulesContainer}>

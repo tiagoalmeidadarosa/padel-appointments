@@ -1,5 +1,10 @@
 import { httpClient } from "@/httpClient";
-import { Agenda, AgendaRequest, Schedule } from "@/shared/interfaces";
+import {
+  Agenda,
+  AgendaRequest,
+  Schedule,
+  UpdateAgendaRequest,
+} from "@/shared/interfaces";
 
 export class AgendaService {
   static getAgendas() {
@@ -16,10 +21,7 @@ export class AgendaService {
     return httpClient.post(`/api/agendas`, agendaRequest);
   }
 
-  static updateAgenda(
-    agendaId: number
-    // updateRequest: UpdateAppointmentRequest
-  ) {
-    // return httpClient.put(`/api/agendas/${agendaId}`, updateRequest);
+  static updateAgenda(agendaId: number, updateRequest: UpdateAgendaRequest) {
+    return httpClient.put(`/api/agendas/${agendaId}`, updateRequest);
   }
 }

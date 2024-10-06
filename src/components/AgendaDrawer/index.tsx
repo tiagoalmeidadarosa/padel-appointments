@@ -9,11 +9,15 @@ import {
   Space,
   TimePicker,
   Select,
+  Form,
 } from "antd";
 import { AgendaService } from "@/services/agenda";
-import moment from "moment";
 import "moment/locale/pt-br";
-import { Agenda, AgendaRequest } from "@/shared/interfaces";
+import {
+  Agenda,
+  AgendaRequest,
+  UpdateAgendaRequest,
+} from "@/shared/interfaces";
 import dayjs from "dayjs";
 
 type Props = {
@@ -23,201 +27,75 @@ type Props = {
 };
 export default function AgendaDrawer(props: Props) {
   const { onCancel, show, preSelectedAgenda } = props;
+  const { Text } = Typography;
+
   const [api, contextHolder] = notification.useNotification();
 
-  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
-  const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(
-    preSelectedAgenda
-  );
+  const [agenda, setAgenda] = useState<Agenda | null>(preSelectedAgenda);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const resetModal = () => {
-    onCancel();
+  const isEditing = !!agenda?.id;
+
+  type NotificationType = "success" | "info" | "warning" | "error";
+
+  const openNotification = (type: NotificationType) => {
+    const placement = "topLeft";
+    if (type === "error") {
+      api[type]({
+        message: "Erro!",
+        description: (
+          <Text>
+            Não foi possível {isEditing ? "editar" : "adicionar"} agenda.
+          </Text>
+        ),
+        placement,
+      });
+    } else {
+      api[type]({
+        message: "Alterações salvas!",
+        description: (
+          <Text>
+            Agenda {isEditing ? "editada" : "adicionada"} com sucesso.
+          </Text>
+        ),
+        placement,
+      });
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
+    }
   };
 
-  const CustomTitle = () => {
-    const { Text } = Typography;
-    moment.locale("pt-br");
-
-    return (
-      <div className={styles.center}>
-        <Text>
-          {preSelectedAgenda
-            ? `Agenda ${preSelectedAgenda.name}`
-            : "Nova agenda"}
-        </Text>
-      </div>
-    );
-  };
-
-  const CustomFooter = (agenda: Agenda | null) => {
-    const { Text } = Typography;
-
-    const isEditing = !!agenda?.id;
-    type NotificationType = "success" | "info" | "warning" | "error";
-
-    const openNotification = (type: NotificationType) => {
-      const placement = "topLeft";
-      if (type === "error") {
-        api[type]({
-          message: "Erro!",
-          description: (
-            <Text>
-              Não foi possível {isEditing ? "editar" : "adicionar"} agenda.
-            </Text>
-          ),
-          placement,
+  const handleSave = () => {
+    setIsSubmitting(true);
+    if (isEditing) {
+      AgendaService.updateAgenda(agenda.id, {
+        name: agenda.name,
+      } as UpdateAgendaRequest)
+        .then(() => openNotification("success"))
+        .catch((err) => {
+          console.log(err);
+          openNotification("error");
+        })
+        .finally(() => {
+          setIsSubmitting(false);
         });
-      } else {
-        api[type]({
-          message: "Alterações salvas!",
-          description: (
-            <Text>
-              Agenda {isEditing ? "editada" : "adicionada"} com sucesso.
-            </Text>
-          ),
-          placement,
+    } else {
+      AgendaService.addAgenda({
+        name: agenda?.name,
+        startsAt: agenda?.startsAt,
+        endsAt: agenda?.endsAt,
+        interval: agenda?.interval,
+      } as AgendaRequest)
+        .then(() => openNotification("success"))
+        .catch((err) => {
+          console.log(err);
+          openNotification("error");
+        })
+        .finally(() => {
+          setIsSubmitting(false);
         });
-        setTimeout(function () {
-          window.location.reload();
-        }, 3000);
-      }
-    };
-
-    const handleSave = () => {
-      setConfirmLoading(true);
-      if (isEditing) {
-        // AgendaService.updateAgenda(agenda.id, {
-        //   customerName: agenda.name,
-        // } as UpdateAppointmentRequest)
-        //   .then(() => openNotification("success"))
-        //   .catch((err) => {
-        //     console.log(err);
-        //     openNotification("error");
-        //   })
-        //   .finally(() => {
-        //     setConfirmLoading(false);
-        //   });
-      } else {
-        AgendaService.addAgenda({
-          name: agenda?.name,
-          startsAt: agenda?.startsAt,
-          endsAt: agenda?.endsAt,
-          interval: agenda?.interval,
-        } as AgendaRequest)
-          .then(() => openNotification("success"))
-          .catch((err) => {
-            console.log(err);
-            openNotification("error");
-          })
-          .finally(() => {
-            setConfirmLoading(false);
-          });
-      }
-    };
-
-    return (
-      <Space className={styles.end}>
-        <Button key="back" onClick={resetModal}>
-          Voltar
-        </Button>
-        <Button
-          key="submit"
-          type="primary"
-          loading={confirmLoading}
-          onClick={handleSave}
-        >
-          Salvar
-        </Button>
-      </Space>
-    );
-  };
-
-  const CustomContent = (
-    agenda: Agenda | null,
-    setAgenda: React.Dispatch<React.SetStateAction<Agenda | null>>
-  ) => {
-    const { Text } = Typography;
-
-    return (
-      <>
-        <div className={styles.content}>
-          <div className={styles.inputs}>
-            <div className={styles.input}>
-              <div>
-                <Text strong>{"Nome:"}</Text>
-                <Text style={{ color: "#ff4d4f" }}>{` *`}</Text>
-              </div>
-              <Input
-                placeholder={"Digite o nome"}
-                value={agenda?.name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setAgenda(
-                    (prevAgenda) =>
-                      ({
-                        ...prevAgenda,
-                        name: e.target.value,
-                      } as Agenda)
-                  );
-                }}
-              />
-            </div>
-            <div className={styles.input}>
-              <div>
-                <Text strong>{"Início e término:"}</Text>
-                <Text style={{ color: "#ff4d4f" }}>{` *`}</Text>
-              </div>
-              <TimePicker.RangePicker
-                placeholder={["Data de início", "Data de fim"]}
-                hourStep={1}
-                minuteStep={30}
-                showSecond={false}
-                value={
-                  agenda?.startsAt && agenda?.endsAt
-                    ? [
-                        dayjs(agenda?.startsAt, "HH:mm:ss"),
-                        dayjs(agenda?.endsAt, "HH:mm:ss"),
-                      ]
-                    : undefined
-                }
-                onChange={(dates: any, dateStrings: [string, string]) => {
-                  setAgenda(
-                    (prevAgenda) =>
-                      ({
-                        ...prevAgenda,
-                        startsAt: dateStrings[0],
-                        endsAt: dateStrings[1],
-                      } as Agenda)
-                  );
-                }}
-              />
-            </div>
-            <div className={styles.input}>
-              <div>
-                <Text strong>{"Intervalo entre horários:"}</Text>
-                <Text style={{ color: "#ff4d4f" }}>{` *`}</Text>
-              </div>
-              <Select
-                placeholder={"Selecione o intervalo"}
-                value={agenda?.interval}
-                onChange={(value: string) => {
-                  setAgenda(
-                    (prevAgenda) =>
-                      ({
-                        ...prevAgenda,
-                        interval: value,
-                      } as Agenda)
-                  );
-                }}
-                options={[
-                  { value: "00:30:00", label: "30 minutos" },
-                  { value: "01:00:00", label: "1 hora" },
-                ]}
-              />
-            </div>
-          </div>
-        </div>
-      </>
-    );
+    }
   };
 
   return (
@@ -226,13 +104,145 @@ export default function AgendaDrawer(props: Props) {
       <Drawer
         open={show}
         placement="right"
-        onClose={resetModal}
+        onClose={onCancel}
         closable={false}
-        title={<CustomTitle />}
-        footer={CustomFooter(selectedAgenda)}
+        title={CustomTitle(preSelectedAgenda)}
+        footer={CustomFooter(isSubmitting, onCancel, handleSave)}
       >
-        {CustomContent(selectedAgenda, setSelectedAgenda)}
+        <Form name="basic" layout="vertical" autoComplete="off">
+          {CustomContent(agenda, setAgenda)}
+        </Form>
       </Drawer>
     </>
   );
 }
+
+const CustomTitle = (preSelectedAgenda: Agenda | null) => {
+  const { Text } = Typography;
+
+  return (
+    <div className={styles.center}>
+      <Text>
+        {preSelectedAgenda ? `Agenda ${preSelectedAgenda.name}` : "Nova agenda"}
+      </Text>
+    </div>
+  );
+};
+
+const CustomContent = (
+  agenda: Agenda | null,
+  setAgenda: React.Dispatch<React.SetStateAction<Agenda | null>>
+) => {
+  const isEditing = !!agenda?.id;
+
+  return (
+    <>
+      <Form.Item<Agenda>
+        label="Nome"
+        name="name"
+        rules={[{ required: true, message: "Por favor insira o nome!" }]}
+        initialValue={agenda?.name}
+      >
+        <Input
+          placeholder={"Digite o nome"}
+          value={agenda?.name}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setAgenda(
+              (prevAgenda) =>
+                ({
+                  ...prevAgenda,
+                  name: e.target.value,
+                } as Agenda)
+            );
+          }}
+        />
+      </Form.Item>
+      {!isEditing && (
+        <>
+          <Form.Item<Agenda>
+            label="Início e término:"
+            name="startsAtAndEndsAt"
+            rules={[
+              {
+                required: true,
+                message: "Por favor insira o ínicio e o término!",
+              },
+            ]}
+          >
+            <TimePicker.RangePicker
+              placeholder={["Data de início", "Data de fim"]}
+              hourStep={1}
+              minuteStep={30}
+              showSecond={false}
+              value={
+                agenda?.startsAt && agenda?.endsAt
+                  ? [
+                      dayjs(agenda?.startsAt, "HH:mm:ss"),
+                      dayjs(agenda?.endsAt, "HH:mm:ss"),
+                    ]
+                  : undefined
+              }
+              onChange={(dates: any, dateStrings: [string, string]) => {
+                setAgenda(
+                  (prevAgenda) =>
+                    ({
+                      ...prevAgenda,
+                      startsAt: dateStrings[0],
+                      endsAt: dateStrings[1],
+                    } as Agenda)
+                );
+              }}
+            />
+          </Form.Item>
+          <Form.Item<Agenda>
+            label="Intervalo entre horários:"
+            name="interval"
+            rules={[
+              { required: true, message: "Por favor insira o intervalo!" },
+            ]}
+          >
+            <Select
+              placeholder={"Selecione o intervalo"}
+              value={agenda?.interval}
+              onChange={(value: string) => {
+                setAgenda(
+                  (prevAgenda) =>
+                    ({
+                      ...prevAgenda,
+                      interval: value,
+                    } as Agenda)
+                );
+              }}
+              options={[
+                { value: "00:30:00", label: "30 minutos" },
+                { value: "01:00:00", label: "1 hora" },
+              ]}
+            />
+          </Form.Item>
+        </>
+      )}
+    </>
+  );
+};
+
+const CustomFooter = (
+  isSubmitting: boolean,
+  onCancel: () => void,
+  handleSave: () => void
+) => {
+  return (
+    <Space className={styles.end}>
+      <Button key="back" onClick={onCancel}>
+        Cancelar
+      </Button>
+      <Button
+        key="submit"
+        type="primary"
+        loading={isSubmitting}
+        onClick={handleSave}
+      >
+        Salvar
+      </Button>
+    </Space>
+  );
+};

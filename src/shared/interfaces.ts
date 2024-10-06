@@ -35,6 +35,10 @@ export interface AgendaRequest {
   interval: string;
 }
 
+export interface UpdateAgendaRequest {
+  name: string;
+}
+
 export interface Schedule {
   id: number;
   date: string;
