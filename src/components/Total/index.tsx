@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Checkbox, InputNumber, Typography } from "antd";
 import styles from "./styles.module.css";
-import { Appointment } from "@/services/appointment/interfaces";
+import { Appointment } from "@/shared/interfaces";
 import { sumValuesFromArrayOfObjects } from "@/utils/array";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 

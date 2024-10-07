@@ -4,8 +4,7 @@ import { Button, Form, Input, Popconfirm, Table } from "antd";
 import type { FormInstance } from "antd/es/form";
 import { PlusOutlined } from "@ant-design/icons";
 import styles from "./styles.module.css";
-import { Appointment } from "@/services/appointment/interfaces";
-import { ItemConsumed } from "@/shared/interfaces";
+import { Appointment, ItemConsumed } from "@/shared/interfaces";
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
