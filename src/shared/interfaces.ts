@@ -68,6 +68,7 @@ export interface AppointmentRequest {
   customerPhoneNumber: string;
   price: number;
   schedules: Schedule[];
+  agendaId: number;
 }
 
 export interface UpdateAppointmentRequest {

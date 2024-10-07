@@ -24,4 +24,8 @@ export class AgendaService {
   static updateAgenda(agendaId: number, updateRequest: UpdateAgendaRequest) {
     return httpClient.put(`/api/agendas/${agendaId}`, updateRequest);
   }
+
+  static deleteAgenda(agendaId: number) {
+    return httpClient.delete(`/api/agendas/${agendaId}`);
+  }
 }

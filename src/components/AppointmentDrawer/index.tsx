@@ -179,7 +179,7 @@ export default function AppointmentDrawer(props: Props) {
         });
         setTimeout(function () {
           window.location.reload();
-        }, 3000);
+        }, 1500);
       }
     };
 
@@ -240,6 +240,7 @@ export default function AppointmentDrawer(props: Props) {
           price: selectedAppointment?.price,
           hasRecurrence: selectedAppointment?.hasRecurrence,
           schedules: selectedSchedules,
+          agendaId: agendaId,
         } as AppointmentRequest)
           .then(() => openNotification("success"))
           .catch((err) => {

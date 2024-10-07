@@ -10,6 +10,7 @@ import {
   TimePicker,
   Select,
   Form,
+  Modal,
 } from "antd";
 import { AgendaService } from "@/services/agenda";
 import "moment/locale/pt-br";
@@ -25,6 +26,9 @@ type Props = {
   onCancel: () => void;
   preSelectedAgenda: Agenda | null;
 };
+
+type NotificationType = "success" | "info" | "warning" | "error";
+
 export default function AgendaDrawer(props: Props) {
   const { onCancel, show, preSelectedAgenda } = props;
   const { Text } = Typography;
@@ -35,8 +39,6 @@ export default function AgendaDrawer(props: Props) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const isEditing = !!agenda?.id;
-
-  type NotificationType = "success" | "info" | "warning" | "error";
 
   const openNotification = (type: NotificationType) => {
     const placement = "topLeft";
@@ -107,11 +109,9 @@ export default function AgendaDrawer(props: Props) {
         onClose={onCancel}
         closable={false}
         title={CustomTitle(preSelectedAgenda)}
-        footer={CustomFooter(isSubmitting, onCancel, handleSave)}
+        footer={CustomFooter(agenda, isSubmitting, onCancel, handleSave)}
       >
-        <Form name="basic" layout="vertical" autoComplete="off">
-          {CustomContent(agenda, setAgenda)}
-        </Form>
+        {CustomContent(agenda, setAgenda)}
       </Drawer>
     </>
   );
@@ -136,7 +136,7 @@ const CustomContent = (
   const isEditing = !!agenda?.id;
 
   return (
-    <>
+    <Form name="basic" layout="vertical" autoComplete="off">
       <Form.Item<Agenda>
         label="Nome"
         name="name"
@@ -221,28 +221,87 @@ const CustomContent = (
           </Form.Item>
         </>
       )}
-    </>
+    </Form>
   );
 };
 
 const CustomFooter = (
+  agenda: Agenda | null,
   isSubmitting: boolean,
   onCancel: () => void,
   handleSave: () => void
 ) => {
+  const { Text } = Typography;
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const isEditing = !!agenda?.id;
+
+  const openNotification = (type: NotificationType) => {
+    const placement = "topLeft";
+    if (type === "error") {
+      api[type]({
+        message: "Erro!",
+        description: <Text>Não foi possível deletar agenda.</Text>,
+        placement,
+      });
+    } else {
+      api[type]({
+        message: "Alterações salvas!",
+        description: <Text>Agenda deletada com sucesso.</Text>,
+        placement,
+      });
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
+    }
+  };
+
+  const ConfirmModal = {
+    title: "Você deseja realmente deletar essa agenda?",
+    content: <Text>Após deletar não será possível reverter.</Text>,
+    cancelText: "Cancelar",
+    onOk() {
+      handleDelete();
+    },
+  };
+
+  const handleDelete = () => {
+    if (agenda?.id) {
+      AgendaService.deleteAgenda(agenda.id)
+        .then(() => openNotification("success"))
+        .catch((err) => {
+          console.log(err);
+          openNotification("error");
+        });
+    }
+  };
+
+  const onDelete = () => {
+    Modal.confirm(ConfirmModal);
+  };
+
   return (
-    <Space className={styles.end}>
-      <Button key="back" onClick={onCancel}>
-        Cancelar
-      </Button>
-      <Button
-        key="submit"
-        type="primary"
-        loading={isSubmitting}
-        onClick={handleSave}
-      >
-        Salvar
-      </Button>
-    </Space>
+    <>
+      {contextHolder}
+      <div className={styles.space}>
+        <Button danger type="text" disabled={!isEditing} onClick={onDelete}>
+          Deletar agenda
+        </Button>
+        <Space>
+          <Button key="back" onClick={onCancel}>
+            Cancelar
+          </Button>
+          <Button
+            key="submit"
+            type="primary"
+            loading={isSubmitting}
+            onClick={handleSave}
+          >
+            Salvar
+          </Button>
+        </Space>
+      </div>
+    </>
   );
 };

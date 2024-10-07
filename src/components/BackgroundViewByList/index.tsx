@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { Button, Divider, Empty, Space, Spin, Typography } from "antd";
 import {
@@ -124,7 +124,7 @@ const BackgroundViewByList = () => {
           {!isLoading && agendas.length > 0 && (
             <>
               {agendas.map((agenda) => (
-                <>
+                <Fragment key={agenda.id}>
                   <Divider orientation="left">
                     <Space>
                       <Text strong>{agenda.name}</Text>
@@ -144,7 +144,7 @@ const BackgroundViewByList = () => {
                       onNext={handleNextAppointment}
                     />
                   </div>
-                </>
+                </Fragment>
               ))}
             </>
           )}
