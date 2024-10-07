@@ -204,7 +204,7 @@ const CustomContent = (
             <Select
               placeholder={"Selecione o intervalo"}
               value={agenda?.interval}
-              onChange={(value: string) => {
+              onChange={(value: number) => {
                 setAgenda(
                   (prevAgenda) =>
                     ({
@@ -214,8 +214,8 @@ const CustomContent = (
                 );
               }}
               options={[
-                { value: "00:30:00", label: "30 minutos" },
-                { value: "01:00:00", label: "1 hora" },
+                { value: 30, label: "30 minutos" },
+                { value: 60, label: "1 hora" },
               ]}
             />
           </Form.Item>

@@ -137,7 +137,7 @@ const BackgroundViewByList = () => {
                   </Divider>
                   <div className={styles.schedulesContainer}>
                     <Schedules
-                      agendaId={agenda.id}
+                      agenda={agenda}
                       selectedSchedules={selectedSchedules}
                       setSelectedSchedules={setSelectedSchedules}
                       selectedDate={selectedDate}
@@ -178,7 +178,7 @@ const BackgroundViewByList = () => {
 };
 
 type SchedulesProps = {
-  agendaId: number;
+  agenda: Agenda;
   selectedSchedules: Schedule[];
   setSelectedSchedules: React.Dispatch<React.SetStateAction<Schedule[]>>;
   selectedDate: Date;
@@ -189,9 +189,8 @@ type SchedulesProps = {
   ) => void;
 };
 const Schedules = (props: SchedulesProps) => {
-  const { Text } = Typography;
   const {
-    agendaId,
+    agenda,
     selectedSchedules,
     setSelectedSchedules,
     selectedDate,
@@ -203,7 +202,7 @@ const Schedules = (props: SchedulesProps) => {
 
   useEffect(() => {
     setIsLoading(true);
-    AgendaService.getSchedules(agendaId, getUTCString(selectedDate) as string)
+    AgendaService.getSchedules(agenda.id, getUTCString(selectedDate) as string)
       .then((response: AxiosResponse<Schedule[]>) => {
         setSchedules(response.data);
       })
@@ -214,22 +213,19 @@ const Schedules = (props: SchedulesProps) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [agendaId, selectedDate]);
+  }, [agenda.id, selectedDate]);
 
   return (
     <>
       {isLoading && <Spin />}
       {!isLoading && (
-        <>
-          <Space size={4}>
-            <div className={styles.timeShift}>
-              <Text>Manhã:</Text>
-            </div>
-            {getHours(8, 13).map((hour: string, index: number) => {
+        <Space size={8} style={{ flexWrap: "wrap" }}>
+          {getHours(agenda.startsAt, agenda.endsAt, agenda.interval).map(
+            (hour: string, index: number) => {
               return (
                 <Hour
-                  key={`hour_${agendaId}_${index}`}
-                  agendaId={agendaId}
+                  key={`hour_${agenda.id}_${index}`}
+                  agendaId={agenda.id}
                   schedules={schedules}
                   selectedSchedules={selectedSchedules}
                   setSelectedSchedules={setSelectedSchedules}
@@ -238,47 +234,9 @@ const Schedules = (props: SchedulesProps) => {
                   onNext={onNext}
                 />
               );
-            })}
-          </Space>
-          <Space size={4}>
-            <div className={styles.timeShift}>
-              <Text>Tarde:</Text>
-            </div>
-            {getHours(13, 18).map((hour: string, index: number) => {
-              return (
-                <Hour
-                  key={`hour_${agendaId}_${index}`}
-                  agendaId={agendaId}
-                  schedules={schedules}
-                  selectedSchedules={selectedSchedules}
-                  setSelectedSchedules={setSelectedSchedules}
-                  selectedDate={selectedDate}
-                  hour={hour}
-                  onNext={onNext}
-                />
-              );
-            })}
-          </Space>
-          <Space size={4}>
-            <div className={styles.timeShift}>
-              <Text>Noite:</Text>
-            </div>
-            {getHours(18, 23).map((hour: string, index: number) => {
-              return (
-                <Hour
-                  key={`hour_${agendaId}_${index}`}
-                  agendaId={agendaId}
-                  schedules={schedules}
-                  selectedSchedules={selectedSchedules}
-                  setSelectedSchedules={setSelectedSchedules}
-                  selectedDate={selectedDate}
-                  hour={hour}
-                  onNext={onNext}
-                />
-              );
-            })}
-          </Space>
-        </>
+            }
+          )}
+        </Space>
       )}
     </>
   );

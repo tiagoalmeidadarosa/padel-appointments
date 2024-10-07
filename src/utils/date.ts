@@ -1,5 +1,6 @@
 import format from "date-fns/format";
-import { zeroPad } from "./number";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 export const addDays = (date: Date, days: number) => {
   var result = new Date(date);
@@ -7,12 +8,27 @@ export const addDays = (date: Date, days: number) => {
   return result;
 };
 
-export const getHours = (xInterval: number, yInterval: number) => {
+export const getHours = (
+  startsAt: string,
+  endsAt: string,
+  interval: number
+) => {
+  dayjs.extend(utc);
   let hours: string[] = [];
-  for (let i = xInterval; i < yInterval; i++) {
-    let hour = zeroPad(i);
-    hours.push(`${hour}:00:00`, `${hour}:30:00`);
+
+  const startDate = dayjs.utc(startsAt, "HH:mm:ss");
+  const endDate = dayjs.utc(endsAt, "HH:mm:ss");
+
+  if (startDate === endDate || startDate > endDate) {
+    return hours;
   }
+
+  let currentDate = startDate;
+  while (currentDate < endDate) {
+    hours.push(currentDate.format("HH:mm"));
+    currentDate = currentDate.add(interval, "minutes");
+  }
+
   return hours;
 };
 

@@ -46,10 +46,6 @@
   color: white !important;
 }
 
-.timeShift {
-  width: 70px;
-}
-
 .actions {
   display: flex;
   justify-content: end;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./styles.module.css";
 import {
   Button,
@@ -14,19 +14,11 @@ import {
   Space,
 } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
-import { AgendaService } from "@/services/agenda";
 import { AppointmentService } from "@/services/appointment";
-import { getHours, getUTCString } from "@/utils/date";
+import { getUTCString } from "@/utils/date";
 import { phoneMask } from "@/utils/string";
-import { AxiosResponse } from "axios";
 import { ModalSteps } from "../../shared";
-import {
-  LeftOutlined,
-  RightOutlined,
-  CheckSquareOutlined,
-  ArrowRightOutlined,
-} from "@ant-design/icons";
-import { addDays } from "@/utils/date";
+import { ArrowRightOutlined } from "@ant-design/icons";
 import moment from "moment";
 import "moment/locale/pt-br";
 import ItemsConsumedTable from "../ItemsConsumedTable";
@@ -57,16 +49,10 @@ export default function AppointmentDrawer(props: Props) {
     preSelectedSchedules,
     preSelectedAppointment,
   } = props;
-  const fromViewByList = !!preSelectedSchedules;
-
   const [api, contextHolder] = notification.useNotification();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [currentStep, setCurrentStep] = useState<ModalSteps>(
-    fromViewByList ? ModalSteps.step2 : ModalSteps.step1
-  );
+  const [currentStep, setCurrentStep] = useState<ModalSteps>(ModalSteps.step1);
   const [selectedDate, setSelectedDate] = useState<Date>(
     preSelectedDate || new Date()
   );
@@ -75,23 +61,6 @@ export default function AppointmentDrawer(props: Props) {
   );
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(preSelectedAppointment);
-
-  useEffect(() => {
-    if (agendaId && selectedDate && !fromViewByList) {
-      setIsLoading(true);
-      AgendaService.getSchedules(agendaId, getUTCString(selectedDate) as string)
-        .then((response: AxiosResponse<Schedule[]>) => {
-          setSchedules(response.data);
-        })
-        .catch((err) => {
-          console.log(err);
-          setSchedules([] as Schedule[]);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  }, [agendaId, selectedDate, fromViewByList]);
 
   const resetModal = () => {
     setSelectedDate(new Date());
@@ -104,32 +73,9 @@ export default function AppointmentDrawer(props: Props) {
     const { Text } = Typography;
     moment.locale("pt-br");
 
-    const handleChangeDate = (days: number) => {
-      setSelectedSchedules([]);
-      setSelectedDate((prev) => addDays(prev, days));
-    };
-
     return (
       <>
         {currentStep === ModalSteps.step1 && (
-          <div className={`${styles.space} ${styles.centralizedItems}`}>
-            <Button
-              type="text"
-              icon={<LeftOutlined />}
-              onClick={() => handleChangeDate(-1)}
-              disabled={new Date().getDate() === selectedDate.getDate()}
-            />
-            <Text>{`Quadra ${agendaId} - ${
-              moment(selectedDate).format("llll").split(" às")[0]
-            }`}</Text>
-            <Button
-              type="text"
-              icon={<RightOutlined />}
-              onClick={() => handleChangeDate(1)}
-            />
-          </div>
-        )}
-        {currentStep === ModalSteps.step2 && (
           <div className={styles.center}>
             <Text>{`Quadra ${agendaId} - ${
               moment(selectedDate).format("llll").split(" às")[0]
@@ -138,7 +84,7 @@ export default function AppointmentDrawer(props: Props) {
               .join(", ")}`}</Text>
           </div>
         )}
-        {currentStep === ModalSteps.step3 && (
+        {currentStep === ModalSteps.step2 && (
           <div className={styles.center}>
             <Text>{`Comanda #${selectedAppointment?.check.id}`}</Text>
           </div>
@@ -314,24 +260,6 @@ export default function AppointmentDrawer(props: Props) {
     return (
       <>
         {currentStep === ModalSteps.step1 && (
-          <Space className={styles.end}>
-            <Button key="back" onClick={resetModal}>
-              Fechar
-            </Button>
-            <Button
-              key="next"
-              type="primary"
-              onClick={() => {
-                setSelectedAppointment(null);
-                setCurrentStep(ModalSteps.step2);
-              }}
-              disabled={selectedSchedules.length === 0}
-            >
-              Reservar
-            </Button>
-          </Space>
-        )}
-        {currentStep === ModalSteps.step2 && (
           <div className={styles.space}>
             <Popconfirm
               title="Agendamento com recorrência"
@@ -355,14 +283,10 @@ export default function AppointmentDrawer(props: Props) {
                   if (isEditing) {
                     setSelectedSchedules([]);
                   }
-                  if (fromViewByList) {
-                    resetModal();
-                  } else {
-                    setCurrentStep(ModalSteps.step1);
-                  }
+                  resetModal();
                 }}
               >
-                {fromViewByList ? "Fechar" : "Voltar"}
+                Fechar
               </Button>
               <Button
                 key="submit"
@@ -380,7 +304,7 @@ export default function AppointmentDrawer(props: Props) {
             </div>
           </div>
         )}
-        {currentStep === ModalSteps.step3 && (
+        {currentStep === ModalSteps.step2 && (
           <Space className={styles.end}>
             <Button key="back" onClick={() => setCurrentStep(ModalSteps.step2)}>
               Voltar
@@ -421,182 +345,114 @@ export default function AppointmentDrawer(props: Props) {
     return (
       <>
         <div className={styles.content}>
-          {isLoading && <Spin />}
-          {!isLoading && (
-            <>
-              {currentStep === ModalSteps.step1 && (
-                <>
-                  {getHours(8, 23).map((hour: string, index: number) => {
-                    let hasSchedule =
-                      schedules.find((s: Schedule) => s.time === hour) !==
-                      undefined;
-                    let isSelected = selectedSchedules.find(
-                      (s) => s.time === hour
-                    );
-                    const getClassName = () => {
-                      if (hasSchedule) {
-                        return styles.grayButton;
-                      } else if (isSelected) {
-                        return styles.orangeButton;
-                      }
-                      return "";
-                    };
-                    return (
-                      <Button
-                        key={`hour_${index}`}
-                        type={"primary"}
-                        className={getClassName()}
-                        icon={
-                          isSelected && !hasSchedule ? (
-                            <CheckSquareOutlined />
-                          ) : (
-                            <span />
-                          )
-                        }
-                        onClick={() => {
-                          if (hasSchedule && selectedSchedules.length > 0)
-                            return;
-                          if (hasSchedule) {
-                            let schedule = schedules.find(
-                              (s: Schedule) => s.time === hour
-                            ) as Schedule;
-                            setSelectedSchedules([schedule]);
-                            setAppointment(schedule.appointment);
-                            setCurrentStep(ModalSteps.step2);
-                          } else {
-                            if (isSelected) {
-                              setSelectedSchedules((prevState) =>
-                                prevState.filter((s) => s.time !== hour)
-                              );
-                            } else {
-                              setSelectedSchedules((prevState) => [
-                                ...prevState,
-                                {
-                                  date: getUTCString(selectedDate) as string,
-                                  time: hour,
-                                  appointment: {
-                                    agendaId,
-                                  } as Appointment,
-                                } as Schedule,
-                              ]);
-                            }
-                          }
-                        }}
-                      >
-                        {hour.substring(0, 5)}
-                      </Button>
-                    );
-                  })}
-                </>
-              )}
-              {currentStep === ModalSteps.step2 && (
-                <div className={styles.inputs}>
-                  <div className={styles.input}>
-                    <Text strong>{"Nome (obrigatório):"}</Text>
-                    <Input
-                      placeholder={"Digite o nome"}
-                      value={appointment?.customerName}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setAppointment(
-                          (prevAppointment) =>
-                            ({
-                              ...prevAppointment,
-                              customerName: e.target.value,
-                            } as Appointment)
-                        );
-                      }}
-                    />
-                  </div>
-                  <div className={styles.input}>
-                    <Text strong>{"Telefone (obrigatório):"}</Text>
-                    <Input
-                      type="tel"
-                      maxLength={15}
-                      placeholder="Digite o telefone"
-                      value={appointment?.customerPhoneNumber}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setAppointment(
-                          (prevAppointment) =>
-                            ({
-                              ...prevAppointment,
-                              customerPhoneNumber: e.target.value,
-                            } as Appointment)
-                        );
-                      }}
-                      onKeyUp={handlePhoneKeyPress}
-                    />
-                  </div>
-                  <div className={styles.input}>
-                    <Text strong>{"Preço (obrigatório):"}</Text>
-                    <div className={styles.alignCenter}>
-                      <InputNumber
-                        min={0}
-                        value={appointment?.price}
-                        formatter={(value: number | undefined) =>
-                          `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                        }
-                        parser={(value: string | undefined) =>
-                          value
-                            ? parseFloat(value?.replace(/\R\$\s?|(,*)/g, ""))
-                            : 0
-                        }
-                        onChange={(value: number | null) => {
-                          setAppointment(
-                            (prevAppointment) =>
-                              ({
-                                ...prevAppointment,
-                                price: value,
-                              } as Appointment)
-                          );
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className={styles.input}>
-                    <Checkbox
-                      checked={appointment?.hasRecurrence}
-                      onChange={(e: CheckboxChangeEvent) => {
-                        setAppointment(
-                          (prevAppointment) =>
-                            ({
-                              ...prevAppointment,
-                              hasRecurrence: e.target.checked,
-                            } as Appointment)
-                        );
-                      }}
-                      disabled={isEditing}
-                    >
-                      <Text strong>{"Recorrência"}</Text>
-                    </Checkbox>
-                  </div>
-                  {isEditing && (
-                    <Button
-                      type="link"
-                      onClick={() => setCurrentStep(ModalSteps.step3)}
-                      className={styles.floatButton}
-                    >
-                      {"Comanda"} <ArrowRightOutlined />
-                    </Button>
-                  )}
+          <>
+            {currentStep === ModalSteps.step1 && (
+              <div className={styles.inputs}>
+                <div className={styles.input}>
+                  <Text strong>{"Nome (obrigatório):"}</Text>
+                  <Input
+                    placeholder={"Digite o nome"}
+                    value={appointment?.customerName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setAppointment(
+                        (prevAppointment) =>
+                          ({
+                            ...prevAppointment,
+                            customerName: e.target.value,
+                          } as Appointment)
+                      );
+                    }}
+                  />
                 </div>
-              )}
-              {currentStep === ModalSteps.step3 && (
-                <div className={styles.inputs}>
-                  <div className={styles.input}>
-                    <Text strong>{"Itens consumidos:"}</Text>
-                    <ItemsConsumedTable
-                      appointment={appointment}
-                      setAppointment={setAppointment}
+                <div className={styles.input}>
+                  <Text strong>{"Telefone (obrigatório):"}</Text>
+                  <Input
+                    type="tel"
+                    maxLength={15}
+                    placeholder="Digite o telefone"
+                    value={appointment?.customerPhoneNumber}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setAppointment(
+                        (prevAppointment) =>
+                          ({
+                            ...prevAppointment,
+                            customerPhoneNumber: e.target.value,
+                          } as Appointment)
+                      );
+                    }}
+                    onKeyUp={handlePhoneKeyPress}
+                  />
+                </div>
+                <div className={styles.input}>
+                  <Text strong>{"Preço (obrigatório):"}</Text>
+                  <div className={styles.alignCenter}>
+                    <InputNumber
+                      min={0}
+                      value={appointment?.price}
+                      formatter={(value: number | undefined) =>
+                        `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                      }
+                      parser={(value: string | undefined) =>
+                        value
+                          ? parseFloat(value?.replace(/\R\$\s?|(,*)/g, ""))
+                          : 0
+                      }
+                      onChange={(value: number | null) => {
+                        setAppointment(
+                          (prevAppointment) =>
+                            ({
+                              ...prevAppointment,
+                              price: value,
+                            } as Appointment)
+                        );
+                      }}
                     />
                   </div>
-                  <Total
+                </div>
+                <div className={styles.input}>
+                  <Checkbox
+                    checked={appointment?.hasRecurrence}
+                    onChange={(e: CheckboxChangeEvent) => {
+                      setAppointment(
+                        (prevAppointment) =>
+                          ({
+                            ...prevAppointment,
+                            hasRecurrence: e.target.checked,
+                          } as Appointment)
+                      );
+                    }}
+                    disabled={isEditing}
+                  >
+                    <Text strong>{"Recorrência"}</Text>
+                  </Checkbox>
+                </div>
+                {isEditing && (
+                  <Button
+                    type="link"
+                    onClick={() => setCurrentStep(ModalSteps.step2)}
+                    className={styles.floatButton}
+                  >
+                    {"Comanda"} <ArrowRightOutlined />
+                  </Button>
+                )}
+              </div>
+            )}
+            {currentStep === ModalSteps.step2 && (
+              <div className={styles.inputs}>
+                <div className={styles.input}>
+                  <Text strong>{"Itens consumidos:"}</Text>
+                  <ItemsConsumedTable
                     appointment={appointment}
                     setAppointment={setAppointment}
                   />
                 </div>
-              )}
-            </>
-          )}
+                <Total
+                  appointment={appointment}
+                  setAppointment={setAppointment}
+                />
+              </div>
+            )}
+          </>
         </div>
       </>
     );

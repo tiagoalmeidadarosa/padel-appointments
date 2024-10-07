@@ -25,14 +25,14 @@ export interface Agenda {
   name: string;
   startsAt: string;
   endsAt: string;
-  interval: string;
+  interval: number;
 }
 
 export interface AgendaRequest {
   name: string;
   startsAt: string;
   endsAt: string;
-  interval: string;
+  interval: number;
 }
 
 export interface UpdateAgendaRequest {
