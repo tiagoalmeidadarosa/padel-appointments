@@ -266,10 +266,12 @@ const Hour = (props: HourProps) => {
     hour,
   } = props;
 
+  const selectedHour = `${hour}:00`;
+
   const hasSchedule =
-    schedules.find((s: Schedule) => s.time === hour) !== undefined;
+    schedules.find((s: Schedule) => s.time === selectedHour) !== undefined;
   const isSelected = selectedSchedules.find(
-    (s) => s.appointment.agendaId === agendaId && s.time === hour
+    (s) => s.appointment.agendaId === agendaId && s.time === selectedHour
   );
   const getClassName = () => {
     if (hasSchedule) {
@@ -292,14 +294,14 @@ const Hour = (props: HourProps) => {
         }
         if (hasSchedule) {
           let schedule = schedules.find(
-            (s: Schedule) => s.time === hour
+            (s: Schedule) => s.time === selectedHour
           ) as Schedule;
           onNext(agendaId, [schedule], schedule.appointment);
           return;
         }
         if (isSelected) {
           setSelectedSchedules((prevState) =>
-            prevState.filter((s) => s.time !== hour)
+            prevState.filter((s) => s.time !== selectedHour)
           );
           return;
         }
@@ -313,7 +315,7 @@ const Hour = (props: HourProps) => {
           ...prevState,
           {
             date: getUTCString(selectedDate) as string,
-            time: hour,
+            time: selectedHour,
             appointment: {
               agendaId,
             } as Appointment,
@@ -321,7 +323,7 @@ const Hour = (props: HourProps) => {
         ]);
       }}
     >
-      {hour.substring(0, 5)}
+      {selectedHour.substring(0, 5)}
     </Button>
   );
 };
