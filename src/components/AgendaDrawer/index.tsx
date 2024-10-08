@@ -73,6 +73,9 @@ export default function AgendaDrawer(props: Props) {
     if (isEditing) {
       AgendaService.updateAgenda(agenda.id, {
         name: agenda.name,
+        startsAt: agenda?.startsAt,
+        endsAt: agenda?.endsAt,
+        interval: agenda?.interval,
       } as UpdateAgendaRequest)
         .then(() => openNotification("success"))
         .catch((err) => {
@@ -133,8 +136,6 @@ const CustomContent = (
   agenda: Agenda | null,
   setAgenda: React.Dispatch<React.SetStateAction<Agenda | null>>
 ) => {
-  const isEditing = !!agenda?.id;
-
   return (
     <Form name="basic" layout="vertical" autoComplete="off">
       <Form.Item<Agenda>
@@ -157,70 +158,73 @@ const CustomContent = (
           }}
         />
       </Form.Item>
-      {!isEditing && (
-        <>
-          <Form.Item<Agenda>
-            label="Início e término:"
-            name="startsAtAndEndsAt"
-            rules={[
-              {
-                required: true,
-                message: "Por favor insira o ínicio e o término!",
-              },
-            ]}
-          >
-            <TimePicker.RangePicker
-              placeholder={["Data de início", "Data de fim"]}
-              hourStep={1}
-              minuteStep={30}
-              showSecond={false}
-              value={
-                agenda?.startsAt && agenda?.endsAt
-                  ? [
-                      dayjs(agenda?.startsAt, "HH:mm:ss"),
-                      dayjs(agenda?.endsAt, "HH:mm:ss"),
-                    ]
-                  : undefined
-              }
-              onChange={(dates: any, dateStrings: [string, string]) => {
-                setAgenda(
-                  (prevAgenda) =>
-                    ({
-                      ...prevAgenda,
-                      startsAt: dateStrings[0],
-                      endsAt: dateStrings[1],
-                    } as Agenda)
-                );
-              }}
-            />
-          </Form.Item>
-          <Form.Item<Agenda>
-            label="Intervalo entre horários:"
-            name="interval"
-            rules={[
-              { required: true, message: "Por favor insira o intervalo!" },
-            ]}
-          >
-            <Select
-              placeholder={"Selecione o intervalo"}
-              value={agenda?.interval}
-              onChange={(value: number) => {
-                setAgenda(
-                  (prevAgenda) =>
-                    ({
-                      ...prevAgenda,
-                      interval: value,
-                    } as Agenda)
-                );
-              }}
-              options={[
-                { value: 30, label: "30 minutos" },
-                { value: 60, label: "1 hora" },
-              ]}
-            />
-          </Form.Item>
-        </>
-      )}
+      <Form.Item<Agenda>
+        label="Início e término:"
+        name="startsAtAndEndsAt"
+        rules={[
+          {
+            required: true,
+            message: "Por favor insira o ínicio e o término!",
+          },
+        ]}
+        initialValue={
+          agenda?.startsAt && agenda?.endsAt
+            ? [
+                dayjs(agenda.startsAt, "HH:mm:ss"),
+                dayjs(agenda.endsAt, "HH:mm:ss"),
+              ]
+            : undefined
+        }
+      >
+        <TimePicker.RangePicker
+          placeholder={["Data de início", "Data de fim"]}
+          hourStep={1}
+          minuteStep={30}
+          showSecond={false}
+          value={
+            agenda?.startsAt && agenda?.endsAt
+              ? [
+                  dayjs(agenda.startsAt, "HH:mm:ss"),
+                  dayjs(agenda.endsAt, "HH:mm:ss"),
+                ]
+              : undefined
+          }
+          onChange={(dates: any, dateStrings: [string, string]) => {
+            setAgenda(
+              (prevAgenda) =>
+                ({
+                  ...prevAgenda,
+                  startsAt: dateStrings[0],
+                  endsAt: dateStrings[1],
+                } as Agenda)
+            );
+          }}
+        />
+      </Form.Item>
+      <Form.Item<Agenda>
+        label="Intervalo entre horários:"
+        name="interval"
+        rules={[{ required: true, message: "Por favor insira o intervalo!" }]}
+        initialValue={agenda?.interval}
+      >
+        <Select
+          placeholder={"Selecione o intervalo"}
+          value={agenda?.interval}
+          onChange={(value: number) => {
+            setAgenda(
+              (prevAgenda) =>
+                ({
+                  ...prevAgenda,
+                  interval: value,
+                } as Agenda)
+            );
+          }}
+          options={[
+            { value: 30, label: "30 minutos" },
+            { value: 60, label: "1 hora" },
+          ]}
+        />
+      </Form.Item>
     </Form>
   );
 };
