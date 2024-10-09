@@ -12,6 +12,7 @@ import {
   InputNumber,
   Spin,
   Space,
+  Form,
 } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { AppointmentService } from "@/services/appointment";
@@ -344,116 +345,122 @@ export default function AppointmentDrawer(props: Props) {
 
     return (
       <>
-        <div className={styles.content}>
-          <>
-            {currentStep === ModalSteps.step1 && (
-              <div className={styles.inputs}>
-                <div className={styles.input}>
-                  <Text strong>{"Nome (obrigatório):"}</Text>
-                  <Input
-                    placeholder={"Digite o nome"}
-                    value={appointment?.customerName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            customerName: e.target.value,
-                          } as Appointment)
-                      );
-                    }}
-                  />
-                </div>
-                <div className={styles.input}>
-                  <Text strong>{"Telefone (obrigatório):"}</Text>
-                  <Input
-                    type="tel"
-                    maxLength={15}
-                    placeholder="Digite o telefone"
-                    value={appointment?.customerPhoneNumber}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            customerPhoneNumber: e.target.value,
-                          } as Appointment)
-                      );
-                    }}
-                    onKeyUp={handlePhoneKeyPress}
-                  />
-                </div>
-                <div className={styles.input}>
-                  <Text strong>{"Preço (obrigatório):"}</Text>
-                  <div className={styles.alignCenter}>
-                    <InputNumber
-                      min={0}
-                      value={appointment?.price}
-                      formatter={(value: number | undefined) =>
-                        `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                      }
-                      parser={(value: string | undefined) =>
-                        value
-                          ? parseFloat(value?.replace(/\R\$\s?|(,*)/g, ""))
-                          : 0
-                      }
-                      onChange={(value: number | null) => {
-                        setAppointment(
-                          (prevAppointment) =>
-                            ({
-                              ...prevAppointment,
-                              price: value,
-                            } as Appointment)
-                        );
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className={styles.input}>
-                  <Checkbox
-                    checked={appointment?.hasRecurrence}
-                    onChange={(e: CheckboxChangeEvent) => {
-                      setAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            hasRecurrence: e.target.checked,
-                          } as Appointment)
-                      );
-                    }}
-                    disabled={isEditing}
-                  >
-                    <Text strong>{"Recorrência"}</Text>
-                  </Checkbox>
-                </div>
-                {isEditing && (
-                  <Button
-                    type="link"
-                    onClick={() => setCurrentStep(ModalSteps.step2)}
-                    className={styles.floatButton}
-                  >
-                    {"Comanda"} <ArrowRightOutlined />
-                  </Button>
-                )}
-              </div>
+        {currentStep === ModalSteps.step1 && (
+          <Form name="basic" layout="vertical" autoComplete="off">
+            <Form.Item<Appointment>
+              label="Nome do cliente"
+              name="customerName"
+              rules={[{ required: true, message: "Por favor insira o nome!" }]}
+              initialValue={appointment?.customerName}
+            >
+              <Input
+                placeholder={"Digite o nome"}
+                value={appointment?.customerName}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setAppointment(
+                    (prevAppointment) =>
+                      ({
+                        ...prevAppointment,
+                        customerName: e.target.value,
+                      } as Appointment)
+                  );
+                }}
+              />
+            </Form.Item>
+            <Form.Item<Appointment>
+              label="Telefone do cliente"
+              name="customerPhoneNumber"
+              rules={[
+                { required: true, message: "Por favor insira o telefone!" },
+              ]}
+              initialValue={appointment?.customerPhoneNumber}
+            >
+              <Input
+                type="tel"
+                maxLength={15}
+                placeholder="Digite o telefone"
+                value={appointment?.customerPhoneNumber}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setAppointment(
+                    (prevAppointment) =>
+                      ({
+                        ...prevAppointment,
+                        customerPhoneNumber: e.target.value,
+                      } as Appointment)
+                  );
+                }}
+                onKeyUp={handlePhoneKeyPress}
+              />
+            </Form.Item>
+            <Form.Item<Appointment>
+              label="Preço"
+              name="price"
+              rules={[{ required: true, message: "Por favor insira o preço!" }]}
+              initialValue={appointment?.price}
+            >
+              <InputNumber
+                min={0}
+                value={appointment?.price}
+                formatter={(value: number | undefined) =>
+                  `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={(value: string | undefined) =>
+                  value ? parseFloat(value?.replace(/\R\$\s?|(,*)/g, "")) : 0
+                }
+                onChange={(value: number | null) => {
+                  setAppointment(
+                    (prevAppointment) =>
+                      ({
+                        ...prevAppointment,
+                        price: value,
+                      } as Appointment)
+                  );
+                }}
+              />
+            </Form.Item>
+            <Form.Item<Appointment>
+              name="hasRecurrence"
+              initialValue={appointment?.hasRecurrence}
+            >
+              <Checkbox
+                checked={appointment?.hasRecurrence}
+                onChange={(e: CheckboxChangeEvent) => {
+                  setAppointment(
+                    (prevAppointment) =>
+                      ({
+                        ...prevAppointment,
+                        hasRecurrence: e.target.checked,
+                      } as Appointment)
+                  );
+                }}
+                disabled={isEditing}
+              >
+                <Text>{"Recorrência"}</Text>
+              </Checkbox>
+            </Form.Item>
+            {isEditing && (
+              <Button
+                type="link"
+                onClick={() => setCurrentStep(ModalSteps.step2)}
+                className={styles.floatButton}
+              >
+                {"Comanda"} <ArrowRightOutlined />
+              </Button>
             )}
-            {currentStep === ModalSteps.step2 && (
-              <div className={styles.inputs}>
-                <div className={styles.input}>
-                  <Text strong>{"Itens consumidos:"}</Text>
-                  <ItemsConsumedTable
-                    appointment={appointment}
-                    setAppointment={setAppointment}
-                  />
-                </div>
-                <Total
-                  appointment={appointment}
-                  setAppointment={setAppointment}
-                />
-              </div>
-            )}
-          </>
-        </div>
+          </Form>
+        )}
+        {currentStep === ModalSteps.step2 && (
+          <div className={styles.inputs}>
+            <div className={styles.input}>
+              <Text strong>{"Itens consumidos:"}</Text>
+              <ItemsConsumedTable
+                appointment={appointment}
+                setAppointment={setAppointment}
+              />
+            </div>
+            <Total appointment={appointment} setAppointment={setAppointment} />
+          </div>
+        )}
       </>
     );
   };

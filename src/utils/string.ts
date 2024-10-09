@@ -1,4 +1,4 @@
-export const phoneMask = (value: string) => {
+export const phoneMask = (value: string | undefined) => {
   if (!value) return "";
   value = value.replace(/\D/g, "");
   value = value.replace(/(\d{2})(\d)/, "($1) $2");
