@@ -64,13 +64,13 @@ export default function AppointmentDrawer(props: Props) {
     onCancel();
   };
 
-  const CustomTitle = () => {
+  const CustomTitle = (step: ModalSteps) => {
     const { Text } = Typography;
     moment.locale("pt-br");
 
     return (
       <>
-        {currentStep === ModalSteps.step1 && (
+        {step === ModalSteps.step1 && (
           <div className={styles.center}>
             <Text>{`Quadra ${agendaId} - ${
               moment(selectedDate).format("llll").split(" às")[0]
@@ -79,7 +79,7 @@ export default function AppointmentDrawer(props: Props) {
               .join(", ")}`}</Text>
           </div>
         )}
-        {currentStep === ModalSteps.step2 && (
+        {step === ModalSteps.step2 && (
           <div className={styles.center}>
             <Text>{`Comanda #${selectedAppointment?.check.id}`}</Text>
           </div>
@@ -88,7 +88,7 @@ export default function AppointmentDrawer(props: Props) {
     );
   };
 
-  const CustomFooter = () => {
+  const CustomFooter = (step: ModalSteps) => {
     const { Text } = Typography;
 
     const [openPopconfirm, setOpenPopconfirm] = useState(false);
@@ -247,7 +247,7 @@ export default function AppointmentDrawer(props: Props) {
 
     return (
       <>
-        {currentStep === ModalSteps.step1 && (
+        {step === ModalSteps.step1 && (
           <div className={styles.space}>
             <Popconfirm
               title="Agendamento com recorrência"
@@ -292,9 +292,9 @@ export default function AppointmentDrawer(props: Props) {
             </div>
           </div>
         )}
-        {currentStep === ModalSteps.step2 && (
+        {step === ModalSteps.step2 && (
           <Space className={styles.end}>
-            <Button key="back" onClick={() => setCurrentStep(ModalSteps.step2)}>
+            <Button key="back" onClick={() => setCurrentStep(ModalSteps.step1)}>
               Voltar
             </Button>
             <Button
@@ -311,7 +311,7 @@ export default function AppointmentDrawer(props: Props) {
     );
   };
 
-  const CustomContent = () => {
+  const CustomContent = (step: ModalSteps) => {
     const { Text } = Typography;
 
     const [form] = Form.useForm();
@@ -333,7 +333,7 @@ export default function AppointmentDrawer(props: Props) {
 
     return (
       <>
-        {currentStep === ModalSteps.step1 && (
+        {step === ModalSteps.step1 && (
           <Form form={form} name="basic" layout="vertical" autoComplete="off">
             <Form.Item<Appointment>
               label="Nome do cliente"
@@ -437,7 +437,7 @@ export default function AppointmentDrawer(props: Props) {
             )}
           </Form>
         )}
-        {currentStep === ModalSteps.step2 && (
+        {step === ModalSteps.step2 && (
           <div className={styles.inputs}>
             <div className={styles.input}>
               <Text strong>{"Itens consumidos:"}</Text>
@@ -464,10 +464,20 @@ export default function AppointmentDrawer(props: Props) {
         placement="right"
         onClose={resetModal}
         closable={false}
-        title={<CustomTitle />}
-        footer={<CustomFooter />}
+        title={CustomTitle(ModalSteps.step1)}
+        footer={CustomFooter(ModalSteps.step1)}
       >
-        {<CustomContent />}
+        {CustomContent(ModalSteps.step1)}
+        <Drawer
+          open={show && currentStep === ModalSteps.step2}
+          placement="right"
+          onClose={() => setCurrentStep(ModalSteps.step1)}
+          closable={false}
+          title={CustomTitle(ModalSteps.step2)}
+          footer={CustomFooter(ModalSteps.step2)}
+        >
+          {CustomContent(ModalSteps.step2)}
+        </Drawer>
       </Drawer>
     </>
   );
