@@ -438,7 +438,7 @@ export default function AppointmentDrawer(props: Props) {
           </Form>
         )}
         {step === ModalSteps.step2 && (
-          <Collapse defaultActiveKey={["1"]}>
+          <Collapse ghost defaultActiveKey={["1"]}>
             <Collapse.Panel key="1" header="Itens consumidos">
               <ItemsConsumedTable
                 appointment={selectedAppointment}
