@@ -25,13 +25,7 @@ import "moment/locale/pt-br";
 import ItemsConsumedTable from "../ItemsConsumedTable";
 import Total from "../Total";
 import { CheckService } from "@/services/check";
-import {
-  Appointment,
-  Schedule,
-  AppointmentRequest,
-  UpdateAppointmentRequest,
-  CheckRequest,
-} from "@/shared/interfaces";
+import { Appointment, Schedule, CheckRequest } from "@/shared/interfaces";
 
 type Props = {
   show: boolean;
@@ -166,11 +160,7 @@ export default function AppointmentDrawer(props: Props) {
     const handleSave = () => {
       setConfirmLoading(true);
       if (isEditing) {
-        AppointmentService.updateAppointment(selectedAppointment.id, {
-          customerName: selectedAppointment.customerName,
-          customerPhoneNumber: selectedAppointment.customerPhoneNumber,
-          price: selectedAppointment.price,
-        } as UpdateAppointmentRequest)
+        AppointmentService.updateAppointment(selectedAppointment)
           .then(() => openNotification("success"))
           .catch((err) => {
             console.log(err);
@@ -180,15 +170,12 @@ export default function AppointmentDrawer(props: Props) {
             setConfirmLoading(false);
           });
       } else {
-        AppointmentService.addAppointment({
-          date: getUTCString(selectedDate) as string,
-          customerName: selectedAppointment?.customerName,
-          customerPhoneNumber: selectedAppointment?.customerPhoneNumber,
-          price: selectedAppointment?.price,
-          hasRecurrence: selectedAppointment?.hasRecurrence,
-          schedules: selectedSchedules,
-          agendaId: agendaId,
-        } as AppointmentRequest)
+        AppointmentService.addAppointment(
+          getUTCString(selectedDate) as string,
+          selectedAppointment,
+          selectedSchedules,
+          agendaId
+        )
           .then(() => openNotification("success"))
           .catch((err) => {
             console.log(err);

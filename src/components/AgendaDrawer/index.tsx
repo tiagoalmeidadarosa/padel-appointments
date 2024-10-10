@@ -14,11 +14,7 @@ import {
 } from "antd";
 import { AgendaService } from "@/services/agenda";
 import "moment/locale/pt-br";
-import {
-  Agenda,
-  AgendaRequest,
-  UpdateAgendaRequest,
-} from "@/shared/interfaces";
+import { Agenda } from "@/shared/interfaces";
 import dayjs from "dayjs";
 
 type Props = {
@@ -71,12 +67,7 @@ export default function AgendaDrawer(props: Props) {
   const handleSave = () => {
     setIsSubmitting(true);
     if (isEditing) {
-      AgendaService.updateAgenda(agenda.id, {
-        name: agenda.name,
-        startsAt: agenda?.startsAt,
-        endsAt: agenda?.endsAt,
-        interval: agenda?.interval,
-      } as UpdateAgendaRequest)
+      AgendaService.updateAgenda(agenda)
         .then(() => openNotification("success"))
         .catch((err) => {
           console.log(err);
@@ -86,12 +77,7 @@ export default function AgendaDrawer(props: Props) {
           setIsSubmitting(false);
         });
     } else {
-      AgendaService.addAgenda({
-        name: agenda?.name,
-        startsAt: agenda?.startsAt,
-        endsAt: agenda?.endsAt,
-        interval: agenda?.interval,
-      } as AgendaRequest)
+      AgendaService.addAgenda(agenda)
         .then(() => openNotification("success"))
         .catch((err) => {
           console.log(err);

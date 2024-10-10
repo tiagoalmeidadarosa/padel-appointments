@@ -1,16 +1,30 @@
 import { httpClient } from "@/httpClient";
-import { AppointmentRequest, UpdateAppointmentRequest } from "@/shared/interfaces";
+import { Appointment, Schedule } from "@/shared/interfaces";
 
 export class AppointmentService {
-  static addAppointment(appointmentRequest: AppointmentRequest) {
-    return httpClient.post(`/api/appointments`, appointmentRequest);
+  static addAppointment(
+    date: string,
+    appointment: Appointment | null,
+    schedules: Schedule[],
+    agendaId: number
+  ) {
+    return httpClient.post(`/api/appointments`, {
+      date: date,
+      customerName: appointment?.customerName,
+      customerPhoneNumber: appointment?.customerPhoneNumber,
+      price: appointment?.price,
+      hasRecurrence: appointment?.hasRecurrence,
+      schedules: schedules,
+      agendaId: agendaId,
+    });
   }
 
-  static updateAppointment(
-    appointmentId: number,
-    updateRequest: UpdateAppointmentRequest
-  ) {
-    return httpClient.put(`/api/appointments/${appointmentId}`, updateRequest);
+  static updateAppointment(appointment: Appointment) {
+    return httpClient.put(`/api/appointments/${appointment.id}`, {
+      customerName: appointment.customerName,
+      customerPhoneNumber: appointment.customerPhoneNumber,
+      price: appointment.price,
+    });
   }
 
   static deleteAppointment(
