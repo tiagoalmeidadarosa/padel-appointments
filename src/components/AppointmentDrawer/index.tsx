@@ -324,20 +324,17 @@ export default function AppointmentDrawer(props: Props) {
     );
   };
 
-  const CustomContent = (
-    appointment: Appointment | null,
-    setAppointment: React.Dispatch<React.SetStateAction<Appointment | null>>
-  ) => {
+  const CustomContent = () => {
     const { Text } = Typography;
 
     const [form] = Form.useForm();
 
-    const isEditing = !!appointment?.id;
+    const isEditing = !!selectedAppointment?.id;
 
     const handlePhoneKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
       const value = (e.target as HTMLInputElement).value;
       const maskedValue = phoneMask(value);
-      setAppointment(
+      setSelectedAppointment(
         (prevAppointment) =>
           ({
             ...prevAppointment,
@@ -355,13 +352,13 @@ export default function AppointmentDrawer(props: Props) {
               label="Nome do cliente"
               name="customerName"
               rules={[{ required: true, message: "Por favor insira o nome!" }]}
-              initialValue={appointment?.customerName}
+              initialValue={selectedAppointment?.customerName}
             >
               <Input
                 placeholder={"Digite o nome"}
-                value={appointment?.customerName}
+                value={selectedAppointment?.customerName}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setAppointment(
+                  setSelectedAppointment(
                     (prevAppointment) =>
                       ({
                         ...prevAppointment,
@@ -377,15 +374,15 @@ export default function AppointmentDrawer(props: Props) {
               rules={[
                 { required: true, message: "Por favor insira o telefone!" },
               ]}
-              initialValue={appointment?.customerPhoneNumber}
+              initialValue={selectedAppointment?.customerPhoneNumber}
             >
               <Input
                 type="tel"
                 maxLength={15}
                 placeholder="Digite o telefone"
-                value={appointment?.customerPhoneNumber}
+                value={selectedAppointment?.customerPhoneNumber}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setAppointment(
+                  setSelectedAppointment(
                     (prevAppointment) =>
                       ({
                         ...prevAppointment,
@@ -400,11 +397,11 @@ export default function AppointmentDrawer(props: Props) {
               label="Preço"
               name="price"
               rules={[{ required: true, message: "Por favor insira o preço!" }]}
-              initialValue={appointment?.price}
+              initialValue={selectedAppointment?.price}
             >
               <InputNumber
                 min={0}
-                value={appointment?.price}
+                value={selectedAppointment?.price}
                 formatter={(value: number | undefined) =>
                   `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
@@ -412,7 +409,7 @@ export default function AppointmentDrawer(props: Props) {
                   value ? parseFloat(value?.replace(/\R\$\s?|(,*)/g, "")) : 0
                 }
                 onChange={(value: number | null) => {
-                  setAppointment(
+                  setSelectedAppointment(
                     (prevAppointment) =>
                       ({
                         ...prevAppointment,
@@ -424,12 +421,12 @@ export default function AppointmentDrawer(props: Props) {
             </Form.Item>
             <Form.Item<Appointment>
               name="hasRecurrence"
-              initialValue={appointment?.hasRecurrence}
+              initialValue={selectedAppointment?.hasRecurrence}
             >
               <Checkbox
-                checked={appointment?.hasRecurrence}
+                checked={selectedAppointment?.hasRecurrence}
                 onChange={(e: CheckboxChangeEvent) => {
-                  setAppointment(
+                  setSelectedAppointment(
                     (prevAppointment) =>
                       ({
                         ...prevAppointment,
@@ -458,11 +455,14 @@ export default function AppointmentDrawer(props: Props) {
             <div className={styles.input}>
               <Text strong>{"Itens consumidos:"}</Text>
               <ItemsConsumedTable
-                appointment={appointment}
-                setAppointment={setAppointment}
+                appointment={selectedAppointment}
+                setAppointment={setSelectedAppointment}
               />
             </div>
-            <Total appointment={appointment} setAppointment={setAppointment} />
+            <Total
+              appointment={selectedAppointment}
+              setAppointment={setSelectedAppointment}
+            />
           </div>
         )}
       </>
@@ -480,7 +480,7 @@ export default function AppointmentDrawer(props: Props) {
         title={<CustomTitle />}
         footer={<CustomFooter />}
       >
-        {CustomContent(selectedAppointment, setSelectedAppointment)}
+        {<CustomContent />}
       </Drawer>
     </>
   );
