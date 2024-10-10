@@ -35,96 +35,91 @@ const Total: React.FC<TotalProps> = ({ appointment, setAppointment }) => {
 
   if (!appointment) return null;
   return (
-    <div className={styles.totalSection}>
-      <Text strong>{"### Totais:"}</Text>
-      <div className={styles.totalContainer}>
-        <div>
-          <Text strong>{"# Quadra"}</Text>
-        </div>
-        <div className={styles.totalBodyContainer}>
-          <Text className={styles.alignCenter}>
-            <i>{`Rateio: `}</i>
-            {`R$ ${appointment?.price} /`}
-            <InputNumber
-              min={1}
-              value={priceDividedBy}
-              style={{ width: "50px" }}
-              onChange={(value: number | null) => {
-                if (!value) return;
-                setPriceDividedBy(value);
-              }}
+    <div className={styles.totalContainer}>
+      <div>
+        <Text strong>{"# Quadra"}</Text>
+      </div>
+      <div className={styles.totalBodyContainer}>
+        <Text className={styles.alignCenter}>
+          <i>{`Rateio: `}</i>
+          {`R$ ${appointment?.price} /`}
+          <InputNumber
+            min={1}
+            value={priceDividedBy}
+            style={{ width: "50px" }}
+            onChange={(value: number | null) => {
+              if (!value) return;
+              setPriceDividedBy(value);
+            }}
+          />
+          <strong>{` = R$ ${(appointment?.price / priceDividedBy).toFixed(
+            2
+          )} p/ cada`}</strong>
+        </Text>
+        <div className={styles.alignCenter}>
+          <Text>{"Pago:"}</Text>
+          {[...Array(priceDividedBy)].map((x, i) => (
+            <Checkbox
+              key={i}
+              checked={i < pricePaidFor}
+              onChange={(e: CheckboxChangeEvent) =>
+                setPricePaidFor((prev) => (e.target.checked ? ++prev : --prev))
+              }
             />
-            <strong>{` = R$ ${(appointment?.price / priceDividedBy).toFixed(
-              2
-            )} p/ cada`}</strong>
-          </Text>
-          <div className={styles.alignCenter}>
-            <Text>{"Pago:"}</Text>
-            {[...Array(priceDividedBy)].map((x, i) => (
-              <Checkbox
-                key={i}
-                checked={i < pricePaidFor}
-                onChange={(e: CheckboxChangeEvent) =>
-                  setPricePaidFor((prev) =>
-                    e.target.checked ? ++prev : --prev
-                  )
-                }
-              />
-            ))}
+          ))}
+        </div>
+      </div>
+
+      {appointment?.check.itemsConsumed.length > 0 && (
+        <>
+          <div>
+            <Text strong>{"# Itens consumidos"}</Text>
           </div>
-        </div>
-
-        {appointment?.check.itemsConsumed.length > 0 && (
-          <>
-            <div>
-              <Text strong>{"# Itens consumidos"}</Text>
+          {appointment?.check.itemsConsumed.map((item, index) => (
+            <div key={`item_${index}`} className={styles.totalBodyContainer}>
+              <Text className={styles.alignCenter}>
+                <i>{`${item.description}: `}</i>
+                {`${item.quantity}x R$ ${item.price} = `}
+                <strong>{`R$ ${item.quantity * item.price}`}</strong>
+              </Text>
+              <Text className={styles.alignCenter}>
+                {"Pago:"}
+                <Checkbox
+                  checked={item.paid}
+                  onChange={(e: CheckboxChangeEvent) => {
+                    let itemsConsumed = [...appointment?.check.itemsConsumed];
+                    itemsConsumed[index].paid = e.target.checked;
+                    setAppointment(
+                      (prevAppointment) =>
+                        ({
+                          ...prevAppointment,
+                          check: {
+                            ...prevAppointment?.check,
+                            itemsConsumed: itemsConsumed,
+                          },
+                        } as Appointment)
+                    );
+                  }}
+                />
+              </Text>
             </div>
-            {appointment?.check.itemsConsumed.map((item, index) => (
-              <div key={`item_${index}`} className={styles.totalBodyContainer}>
-                <Text className={styles.alignCenter}>
-                  <i>{`${item.description}: `}</i>
-                  {`${item.quantity}x R$ ${item.price} = `}
-                  <strong>{`R$ ${item.quantity * item.price}`}</strong>
-                </Text>
-                <Text className={styles.alignCenter}>
-                  {"Pago:"}
-                  <Checkbox
-                    checked={item.paid}
-                    onChange={(e: CheckboxChangeEvent) => {
-                      let itemsConsumed = [...appointment?.check.itemsConsumed];
-                      itemsConsumed[index].paid = e.target.checked;
-                      setAppointment(
-                        (prevAppointment) =>
-                          ({
-                            ...prevAppointment,
-                            check: {
-                              ...prevAppointment?.check,
-                              itemsConsumed: itemsConsumed,
-                            },
-                          } as Appointment)
-                      );
-                    }}
-                  />
-                </Text>
-              </div>
-            ))}
-          </>
-        )}
+          ))}
+        </>
+      )}
 
-        <div className={styles.totalBodyContainer}>
-          <Text>{"--------------------------------------"}</Text>
-          <Text>
-            {"Valor total: "}
-            <strong>{`R$ ${
-              appointment.price +
-              sumValuesFromArrayOfObjects(
-                appointment.check.itemsConsumed,
-                "quantity",
-                "price"
-              )
-            }`}</strong>
-          </Text>
-        </div>
+      <div className={styles.totalBodyContainer}>
+        <Text>{"--------------------------------------"}</Text>
+        <Text>
+          {"Valor total: "}
+          <strong>{`R$ ${
+            appointment.price +
+            sumValuesFromArrayOfObjects(
+              appointment.check.itemsConsumed,
+              "quantity",
+              "price"
+            )
+          }`}</strong>
+        </Text>
       </div>
     </div>
   );

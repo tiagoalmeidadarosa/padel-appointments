@@ -10,9 +10,9 @@ import {
   Checkbox,
   Input,
   InputNumber,
-  Spin,
   Space,
   Form,
+  Collapse,
 } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { AppointmentService } from "@/services/appointment";
@@ -438,19 +438,20 @@ export default function AppointmentDrawer(props: Props) {
           </Form>
         )}
         {step === ModalSteps.step2 && (
-          <div className={styles.inputs}>
-            <div className={styles.input}>
-              <Text strong>{"Itens consumidos:"}</Text>
+          <Collapse defaultActiveKey={["1"]}>
+            <Collapse.Panel key="1" header="Itens consumidos">
               <ItemsConsumedTable
                 appointment={selectedAppointment}
                 setAppointment={setSelectedAppointment}
               />
-            </div>
-            <Total
-              appointment={selectedAppointment}
-              setAppointment={setSelectedAppointment}
-            />
-          </div>
+            </Collapse.Panel>
+            <Collapse.Panel key="2" header="### Totais:">
+              <Total
+                appointment={selectedAppointment}
+                setAppointment={setSelectedAppointment}
+              />
+            </Collapse.Panel>
+          </Collapse>
         )}
       </>
     );
