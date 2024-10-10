@@ -330,23 +330,27 @@ export default function AppointmentDrawer(props: Props) {
   ) => {
     const { Text } = Typography;
 
+    const [form] = Form.useForm();
+
     const isEditing = !!appointment?.id;
 
     const handlePhoneKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      let value = (e.target as HTMLInputElement).value;
+      const value = (e.target as HTMLInputElement).value;
+      const maskedValue = phoneMask(value);
       setAppointment(
         (prevAppointment) =>
           ({
             ...prevAppointment,
-            customerPhoneNumber: phoneMask(value),
+            customerPhoneNumber: maskedValue,
           } as Appointment)
       );
+      form.setFieldValue("customerPhoneNumber", maskedValue);
     };
 
     return (
       <>
         {currentStep === ModalSteps.step1 && (
-          <Form name="basic" layout="vertical" autoComplete="off">
+          <Form form={form} name="basic" layout="vertical" autoComplete="off">
             <Form.Item<Appointment>
               label="Nome do cliente"
               name="customerName"
