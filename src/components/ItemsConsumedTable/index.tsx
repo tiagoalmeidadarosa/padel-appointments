@@ -4,8 +4,7 @@ import { Button, Form, Input, Popconfirm, Table } from "antd";
 import type { FormInstance } from "antd/es/form";
 import { PlusOutlined } from "@ant-design/icons";
 import styles from "./styles.module.css";
-import { Appointment } from "@/services/appointment/interfaces";
-import { ItemConsumed } from "@/services/check/interfaces";
+import { Appointment, ItemConsumed } from "@/shared/interfaces";
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
@@ -120,8 +119,8 @@ type EditableTableProps = Parameters<typeof Table>[0];
 type ColumnTypes = Exclude<EditableTableProps["columns"], undefined>;
 
 type ItemsConsumedProps = {
-  appointment: Appointment | undefined;
-  setAppointment: React.Dispatch<React.SetStateAction<Appointment | undefined>>;
+  appointment: Appointment | null;
+  setAppointment: React.Dispatch<React.SetStateAction<Appointment | null>>;
 };
 const ItemsConsumedTable: React.FC<ItemsConsumedProps> = ({
   appointment,

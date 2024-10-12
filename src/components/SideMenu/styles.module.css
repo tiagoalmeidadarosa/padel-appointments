@@ -1,0 +1,21 @@
+.logo {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header > h5 {
+  color: white;
+  margin: 0;
+}
+
+.header > button {
+  background-color: transparent;
+  color: white;
+}

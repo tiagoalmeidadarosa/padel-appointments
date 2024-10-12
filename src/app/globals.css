@@ -11,33 +11,6 @@ body {
   background-color: #d9d9d9;
 }
 
-.ant-btn-primary {
-  background-color: #134B8D;
-  border-color: #134B8D;
-  color: white;
-}
-.ant-btn-primary:hover:not([disabled]) {
-  color: whitesmoke !important;
-  border-color: darkblue !important;
-  background-color: #134B8D !important;
-}
-
-.ant-btn-default {
-  border-color: #5B5454;
-}
-.ant-btn-default:hover:not([disabled]) {
-  color: #134B8D !important;
-  border-color: #134B8D !important;
-}
-
-.ant-drawer-header-title {
-  min-height: 2rem !important; 
-}
-
-.ant-drawer-header-title span {
-  text-align: center !important;
-}
-
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;

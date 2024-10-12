@@ -1,26 +1,30 @@
 import { httpClient } from "@/httpClient";
-import {
-  AppointmentRequest,
-  Schedule,
-  UpdateAppointmentRequest,
-} from "./interfaces";
+import { Appointment, Schedule } from "@/shared/interfaces";
 
 export class AppointmentService {
-  static getSchedules(courtId: number, date: string) {
-    return httpClient.get<Schedule[]>(
-      `/courts/${courtId}/schedules?date=${date}`
-    );
-  }
-
-  static addAppointment(appointmentRequest: AppointmentRequest) {
-    return httpClient.post(`/appointments`, appointmentRequest);
-  }
-
-  static updateAppointment(
-    appointmentId: number,
-    updateRequest: UpdateAppointmentRequest
+  static addAppointment(
+    date: string,
+    appointment: Appointment | null,
+    schedules: Schedule[],
+    agendaId: number
   ) {
-    return httpClient.put(`/appointments/${appointmentId}`, updateRequest);
+    return httpClient.post(`/api/appointments`, {
+      date: date,
+      customerName: appointment?.customerName,
+      customerPhoneNumber: appointment?.customerPhoneNumber,
+      price: appointment?.price,
+      hasRecurrence: appointment?.hasRecurrence,
+      schedules: schedules,
+      agendaId: agendaId,
+    });
+  }
+
+  static updateAppointment(appointment: Appointment) {
+    return httpClient.put(`/api/appointments/${appointment.id}`, {
+      customerName: appointment.customerName,
+      customerPhoneNumber: appointment.customerPhoneNumber,
+      price: appointment.price,
+    });
   }
 
   static deleteAppointment(
@@ -29,7 +33,7 @@ export class AppointmentService {
     removeRecurrence: boolean
   ) {
     return httpClient.delete(
-      `/appointments/${appointmentId}/schedules/${scheduleId}?removeRecurrence=${removeRecurrence}`
+      `/api/appointments/${appointmentId}/schedules/${scheduleId}?removeRecurrence=${removeRecurrence}`
     );
   }
 }

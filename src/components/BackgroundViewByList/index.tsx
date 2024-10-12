@@ -1,60 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import styles from "./styles.module.css";
-import { BackgroundType } from "../../shared";
+import { Button, Divider, Empty, Space, Spin, Typography } from "antd";
 import {
-  Button,
-  ConfigProvider,
-  Divider,
-  FloatButton,
-  Space,
-  Spin,
-  Switch,
-  Typography,
-} from "antd";
-import { signOut } from "next-auth/react";
-import {
-  LogoutOutlined,
   LeftOutlined,
   RightOutlined,
   DoubleRightOutlined,
+  PlusOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
-import { Appointment, Schedule } from "@/services/appointment/interfaces";
 import { addDays, getHours, getUTCString } from "@/utils/date";
-import { CourtService } from "@/services/court";
+import { AgendaService } from "@/services/agenda";
 import { AxiosResponse } from "axios";
-import { Court } from "@/services/court/interfaces";
+import { Appointment, Schedule, Agenda } from "@/shared/interfaces";
 import { CheckSquareOutlined } from "@ant-design/icons";
-import { AppointmentService } from "@/services/appointment";
-import AppointmentModal from "../AppointmentDrawer";
+import AppointmentDrawer from "../AppointmentDrawer";
+import AgendaDrawer from "../AgendaDrawer";
 
-type Props = {
-  backgroundType: BackgroundType;
-  onChangeBackgroundType: (backgroundType: BackgroundType) => void;
-};
-const BackgroundViewByList = (props: Props) => {
+const BackgroundViewByList = () => {
   const { Text } = Typography;
-  const { backgroundType, onChangeBackgroundType } = props;
 
-  const [openModal, setOpenModal] = useState(false);
+  const [openAppointmentModal, setOpenAppointmentModal] = useState(false);
+  const [openAgendaModal, setOpenAgendaModal] = useState(false);
   const [selectedCourtId, setSelectedCourtId] = useState<number>();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSchedules, setSelectedSchedules] = useState<Schedule[]>([]);
-  const [selectedAppointment, setSelectedAppointment] = useState<
-    Appointment | undefined
-  >();
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
+  const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [courts, setCourts] = useState<Court[]>([]);
+  const [agendas, setAgendas] = useState<Agenda[]>([]);
 
   useEffect(() => {
     setIsLoading(true);
-    CourtService.getCourts()
-      .then((response: AxiosResponse<Court[]>) => {
-        setCourts(response.data);
+    AgendaService.getAgendas()
+      .then((response: AxiosResponse<Agenda[]>) => {
+        setAgendas(response.data);
       })
       .catch((err) => {
         console.log(err);
-        setCourts([] as Court[]);
+        setAgendas([] as Agenda[]);
       })
       .finally(() => {
         setIsLoading(false);
@@ -66,15 +51,20 @@ const BackgroundViewByList = (props: Props) => {
     setSelectedDate((prev) => addDays(prev, days));
   };
 
-  const handleNext = (
+  const handleNextAppointment = (
     courtId: number,
     schedules: Schedule[],
-    appointment: Appointment | undefined
+    appointment: Appointment | null
   ) => {
     setSelectedCourtId(courtId);
     setSelectedSchedules(schedules);
     setSelectedAppointment(appointment);
-    setOpenModal(true);
+    setOpenAppointmentModal(true);
+  };
+
+  const handleNextAgenda = (agenda: Agenda | null) => {
+    setSelectedAgenda(agenda);
+    setOpenAgendaModal(true);
   };
 
   return (
@@ -97,82 +87,90 @@ const BackgroundViewByList = (props: Props) => {
           />
         </div>
         <div className={styles.body}>
+          <div className={styles.actions}>
+            {selectedSchedules.length === 0 && (
+              <Button
+                type="link"
+                icon={<PlusOutlined />}
+                onClick={() => handleNextAgenda(null)}
+              >
+                Nova agenda
+              </Button>
+            )}
+            {selectedSchedules.length > 0 && (
+              <Button
+                type="primary"
+                className={styles.orangeButton}
+                icon={<DoubleRightOutlined />}
+                onClick={() =>
+                  handleNextAppointment(
+                    selectedSchedules[0].appointment.agendaId,
+                    selectedSchedules,
+                    null
+                  )
+                }
+              >
+                Agendamento
+              </Button>
+            )}
+          </div>
           {isLoading && <Spin style={{ marginTop: "1rem" }} />}
-          {!isLoading && (
+          {!isLoading && agendas.length === 0 && (
+            <Empty
+              description="Nenhuma agenda"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          )}
+          {!isLoading && agendas.length > 0 && (
             <>
-              {courts.map((court) => (
-                <>
+              {agendas.map((agenda) => (
+                <Fragment key={agenda.id}>
                   <Divider orientation="left">
-                    <Text strong>{court.name}</Text>
+                    <Space>
+                      <Text strong>{agenda.name}</Text>
+                      <Button
+                        type="link"
+                        icon={<EditOutlined />}
+                        onClick={() => handleNextAgenda(agenda)}
+                      />
+                    </Space>
                   </Divider>
                   <div className={styles.schedulesContainer}>
                     <Schedules
-                      courtId={court.id}
+                      agenda={agenda}
                       selectedSchedules={selectedSchedules}
                       setSelectedSchedules={setSelectedSchedules}
                       selectedDate={selectedDate}
-                      onNext={handleNext}
+                      onNext={handleNextAppointment}
                     />
                   </div>
-                </>
+                </Fragment>
               ))}
             </>
           )}
         </div>
-        <div className={styles.footer}>
-          <Space>
-            <Text>Visualização por lista</Text>
-            <Switch
-              size="small"
-              checked={backgroundType === BackgroundType.list}
-              onChange={() => onChangeBackgroundType(BackgroundType.image)}
-            />
-          </Space>
-          <Button
-            icon={<LogoutOutlined />}
-            type="text"
-            onClick={() => signOut()}
-          >
-            Logout
-          </Button>
-        </div>
-        {selectedSchedules.length > 0 && (
-          <ConfigProvider
-            theme={{
-              token: {
-                colorPrimary: "#fa8c16",
-              },
-            }}
-          >
-            <FloatButton
-              shape="square"
-              type="primary"
-              description="Reservar"
-              icon={<DoubleRightOutlined />}
-              onClick={() =>
-                handleNext(
-                  selectedSchedules[0].courtId,
-                  selectedSchedules,
-                  undefined
-                )
-              }
-              style={{ width: "5rem" }}
-            />
-          </ConfigProvider>
-        )}
       </div>
-      {openModal && selectedCourtId && (
-        <AppointmentModal
-          show={openModal}
-          courtId={selectedCourtId}
+      {openAppointmentModal && selectedCourtId && (
+        <AppointmentDrawer
+          show={openAppointmentModal}
+          agendaId={selectedCourtId}
           onCancel={() => {
             setSelectedCourtId(undefined);
             setSelectedSchedules([]);
-            setOpenModal(false);
+            setOpenAppointmentModal(false);
           }}
           preSelectedDate={selectedDate}
           preSelectedSchedules={selectedSchedules}
           preSelectedAppointment={selectedAppointment}
+        />
+      )}
+      {openAgendaModal && (
+        <AgendaDrawer
+          show={openAgendaModal}
+          onCancel={() => {
+            setOpenAgendaModal(false);
+          }}
+          preSelectedAgenda={selectedAgenda}
         />
       )}
     </>
@@ -180,20 +178,19 @@ const BackgroundViewByList = (props: Props) => {
 };
 
 type SchedulesProps = {
-  courtId: number;
+  agenda: Agenda;
   selectedSchedules: Schedule[];
   setSelectedSchedules: React.Dispatch<React.SetStateAction<Schedule[]>>;
   selectedDate: Date;
   onNext: (
-    courtId: number,
+    agendaId: number,
     schedules: Schedule[],
-    appointment: Appointment | undefined
+    appointment: Appointment | null
   ) => void;
 };
 const Schedules = (props: SchedulesProps) => {
-  const { Text } = Typography;
   const {
-    courtId,
+    agenda,
     selectedSchedules,
     setSelectedSchedules,
     selectedDate,
@@ -205,10 +202,7 @@ const Schedules = (props: SchedulesProps) => {
 
   useEffect(() => {
     setIsLoading(true);
-    AppointmentService.getSchedules(
-      courtId,
-      getUTCString(selectedDate) as string
-    )
+    AgendaService.getSchedules(agenda.id, getUTCString(selectedDate) as string)
       .then((response: AxiosResponse<Schedule[]>) => {
         setSchedules(response.data);
       })
@@ -219,22 +213,19 @@ const Schedules = (props: SchedulesProps) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [courtId, selectedDate]);
+  }, [agenda.id, selectedDate]);
 
   return (
     <>
       {isLoading && <Spin />}
       {!isLoading && (
-        <>
-          <Space size={4}>
-            <div className={styles.timeShift}>
-              <Text>Manhã:</Text>
-            </div>
-            {getHours(8, 13).map((hour: string, index: number) => {
+        <Space size={8} style={{ flexWrap: "wrap" }}>
+          {getHours(agenda.startsAt, agenda.endsAt, agenda.interval).map(
+            (hour: string, index: number) => {
               return (
                 <Hour
-                  key={`hour_${courtId}_${index}`}
-                  courtId={courtId}
+                  key={`hour_${agenda.id}_${index}`}
+                  agendaId={agenda.id}
                   schedules={schedules}
                   selectedSchedules={selectedSchedules}
                   setSelectedSchedules={setSelectedSchedules}
@@ -243,68 +234,30 @@ const Schedules = (props: SchedulesProps) => {
                   onNext={onNext}
                 />
               );
-            })}
-          </Space>
-          <Space size={4}>
-            <div className={styles.timeShift}>
-              <Text>Tarde:</Text>
-            </div>
-            {getHours(13, 18).map((hour: string, index: number) => {
-              return (
-                <Hour
-                  key={`hour_${courtId}_${index}`}
-                  courtId={courtId}
-                  schedules={schedules}
-                  selectedSchedules={selectedSchedules}
-                  setSelectedSchedules={setSelectedSchedules}
-                  selectedDate={selectedDate}
-                  hour={hour}
-                  onNext={onNext}
-                />
-              );
-            })}
-          </Space>
-          <Space size={4}>
-            <div className={styles.timeShift}>
-              <Text>Noite:</Text>
-            </div>
-            {getHours(18, 23).map((hour: string, index: number) => {
-              return (
-                <Hour
-                  key={`hour_${courtId}_${index}`}
-                  courtId={courtId}
-                  schedules={schedules}
-                  selectedSchedules={selectedSchedules}
-                  setSelectedSchedules={setSelectedSchedules}
-                  selectedDate={selectedDate}
-                  hour={hour}
-                  onNext={onNext}
-                />
-              );
-            })}
-          </Space>
-        </>
+            }
+          )}
+        </Space>
       )}
     </>
   );
 };
 
 type HourProps = {
-  courtId: number;
+  agendaId: number;
   schedules: Schedule[];
   selectedSchedules: Schedule[];
   setSelectedSchedules: React.Dispatch<React.SetStateAction<Schedule[]>>;
   selectedDate: Date;
   hour: string;
   onNext: (
-    courtId: number,
+    agendaId: number,
     schedules: Schedule[],
-    appointment: Appointment | undefined
+    appointment: Appointment | null
   ) => void;
 };
 const Hour = (props: HourProps) => {
   const {
-    courtId,
+    agendaId,
     schedules,
     selectedSchedules,
     setSelectedSchedules,
@@ -313,10 +266,12 @@ const Hour = (props: HourProps) => {
     hour,
   } = props;
 
+  const selectedHour = `${hour}:00`;
+
   const hasSchedule =
-    schedules.find((s: Schedule) => s.time === hour) !== undefined;
+    schedules.find((s: Schedule) => s.time === selectedHour) !== undefined;
   const isSelected = selectedSchedules.find(
-    (s) => s.courtId === courtId && s.time === hour
+    (s) => s.appointment.agendaId === agendaId && s.time === selectedHour
   );
   const getClassName = () => {
     if (hasSchedule) {
@@ -339,32 +294,36 @@ const Hour = (props: HourProps) => {
         }
         if (hasSchedule) {
           let schedule = schedules.find(
-            (s: Schedule) => s.time === hour
+            (s: Schedule) => s.time === selectedHour
           ) as Schedule;
-          onNext(courtId, [schedule], schedule.appointment);
+          onNext(agendaId, [schedule], schedule.appointment);
           return;
         }
         if (isSelected) {
           setSelectedSchedules((prevState) =>
-            prevState.filter((s) => s.time !== hour)
+            prevState.filter((s) => s.time !== selectedHour)
           );
           return;
         }
 
-        if (selectedSchedules.find((s) => s.courtId !== courtId)) {
+        if (
+          selectedSchedules.find((s) => s.appointment.agendaId !== agendaId)
+        ) {
           setSelectedSchedules([]);
         }
         setSelectedSchedules((prevState) => [
           ...prevState,
           {
             date: getUTCString(selectedDate) as string,
-            time: hour,
-            courtId: courtId,
+            time: selectedHour,
+            appointment: {
+              agendaId,
+            } as Appointment,
           } as Schedule,
         ]);
       }}
     >
-      {hour.substring(0, 5)}
+      {selectedHour.substring(0, 5)}
     </Button>
   );
 };
